@@ -1,0 +1,127 @@
+======================================================================
+BUILD DATASET - LGD Freddie Mac, muestra 2007
+======================================================================
+Campos en la 1a línea: originación = 31, desempeño = 35
+=> Layout NUEVO (julio 2026)
+
+Originación: 50,000 filas, 50,000 créditos únicos
+Desempeño: 3,012,061 filas mensuales, 50,000 créditos
+Último período del archivo (corte de desempeño): 202603
+Créditos presentes en ambos archivos: 50,000
+  sin desempeño: 0 | sin originación: 0
+
+Recodificación 'no disponible' -> NaN (sobre todos los créditos unidos):
+  credit_score                      38
+  vantage_score_4               50,000
+  mi_pct                             0
+  cltv                               2
+  dti                            1,124
+  ltv                                1
+  n_units                            0
+  n_borrowers                       23
+  property_valuation_method     50,000
+  eltv                          48,197
+  occupancy_status                   0
+  loan_purpose                       0
+  first_time_homebuyer              13
+  property_type                      0
+  channel                            0
+
+----------------------------------------------------------------------
+(a) Total de créditos: 50,000
+
+Distribución del zero_balance_code en la última fila:
+  (vacío = activo al corte)      1,319
+  01                            42,554
+  02                               539
+  03                             1,197
+  09                             2,525
+  15                               223
+  16                             1,127
+  96                               516
+
+(b) Créditos con zero_balance_code en {02,03,09,15}: 4,484
+(c) ... y con actual_loss no nulo: 4,043
+    actual_loss nulo: 441
+      con defect_settlement_date:                441
+      cerrados en los 3 meses previos al corte:  0
+      sin ninguna de las dos explicaciones:      0
+    (en todo (b), cierres en los 3 meses previos al corte: 0)
+    Verificación fórmula de la guía (dif. < $1): 4,043 de 4,043
+    zero_balance_removal_upb nulo o <= 0 (no se puede calcular LGD): 0
+
+Tipo de cierre entre los 4,043 créditos con LGD:
+  02     523
+  03   1,097
+  09   2,223
+  15     200
+
+----------------------------------------------------------------------
+(d) NaN por predictor candidato (lista PROVISIONAL) entre los créditos con LGD:
+  credit_score                  2  ( 0.05%)
+  ltv                           0  ( 0.00%)
+  cltv                          0  ( 0.00%)
+  dti                          81  ( 2.00%)
+  mi_pct                        0  ( 0.00%)
+  orig_upb                      0  ( 0.00%)
+  orig_interest_rate            0  ( 0.00%)
+  occupancy_status              0  ( 0.00%)
+  loan_purpose                  0  ( 0.00%)
+  property_type                 0  ( 0.00%)
+  channel                       0  ( 0.00%)
+  first_time_homebuyer          0  ( 0.00%)
+  n_units                       0  ( 0.00%)
+  n_borrowers                   0  ( 0.00%)
+  property_state                0  ( 0.00%)
+  => Créditos sin NaN en ningún candidato: 3,960 de 4,043
+
+----------------------------------------------------------------------
+(e) Conteo de LGD por tramo   [casos completos (d)  |  todos con LGD (c)]
+  LGD < 0            76  |      77
+  LGD = 0             1  |       1
+  0 < LGD < 1     3,554  |   3,631
+  LGD = 1             0  |       0
+  LGD > 1           329  |     334
+
+----------------------------------------------------------------------
+(f) Resumen del LGD   [casos completos (d)  |  todos con LGD (c)]
+            completos (d)  todos (c)
+n               3960.0000  4043.0000
+media              0.5414     0.5412
+desv. est.         0.3248     0.3238
+mín               -1.0222    -1.0222
+q01               -0.0139    -0.0131
+q05                0.0475     0.0480
+q10                0.1315     0.1331
+q25                0.3096     0.3099
+q50                0.5226     0.5227
+q75                0.7447     0.7439
+q90                0.9676     0.9643
+q95                1.0905     1.0900
+q99                1.3774     1.3739
+máx                2.6946     2.6946
+mediana            0.5226     0.5227
+
+----------------------------------------------------------------------
+Año de cierre (zero_balance_effective_date) entre créditos completos (d):
+zero_balance_effective_date
+2008     30
+2009    215
+2010    516
+2011    736
+2012    754
+2013    519
+2014    385
+2015    261
+2016    213
+2017    108
+2018     65
+2019     42
+2020     37
+2021     34
+2022      8
+2023     12
+2024      9
+2025     16
+
+Base guardada: data\processed\lgd_2007.csv  (4,043 filas, 50 columnas)

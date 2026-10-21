@@ -1,0 +1,15 @@
+# Datos crudos de Freddie Mac: pesan >100 MB (límite de GitHub) y se descargan de la fuente.
+data/raw/**/*.txt
+data/raw/**/*.zip
+
+# Python
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.venv/
+venv/
+
+# Sistema
+.DS_Store
+Thumbs.db
+desktop.ini
