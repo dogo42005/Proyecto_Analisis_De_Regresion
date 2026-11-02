@@ -1,0 +1,126 @@
+======================================================================
+PREPARE MODEL DATA - base de modelamiento LGD, muestra 2007
+======================================================================
+Leído: data/processed/lgd_2007.csv  (4,043 filas, 50 columnas)
+
+Flujo muestral:
+  Créditos en la muestra 2007                              50,000
+  zero_balance_code en {02, 03, 09, 15}                     4,484  (excluidos: 45,516)
+  actual_loss informado (base lgd_2007.csv)                 4,043  (excluidos: 441)
+  Sin liquidaciones en los 3 meses previos al corte (D7)    4,043  (excluidos: 0)
+
+  NaN por predictor candidato (antes de excluir):
+    credit_score                 2
+    dti                         81
+  Casos completos en los predictores candidatos (D5)        3,960  (excluidos: 83)
+
+  Estados sin división censal: {'PR': 4}
+  Estados con división censal (D3)                          3,956  (excluidos: 4)
+
+  Columnas descartadas (D6): vantage_score_4, property_valuation_method, amortization_type, eltv
+  lgd_trunc: 76 casos llevados a 0, 329 llevados a 1
+    Entrenamiento (liquidación <= 201412) (D4)              3,153
+    Validación (liquidación > 201412) (D4)                    803
+
+----------------------------------------------------------------------
+Partición temporal:
+  train   3,153  ( 79.7 %)  meses 200803 a 201412
+  valid     803  ( 20.3 %)  meses 201501 a 202512
+
+Niveles de los factores por tramo:
+
+  channel_grp
+    split        train  valid
+    channel_grp              
+    R             1131    310
+    TPO           2022    493
+
+  property_type_grp
+    split              train  valid
+    property_type_grp              
+    CO                   365     65
+    MH                    49     21
+    PU                   496     73
+    SF                  2243    644
+
+  n_units_grp
+    split        train  valid
+    n_units_grp              
+    1             3084    757
+    2-4             69     46
+
+  division
+    split               train  valid
+    division                        
+    East North Central    527    140
+    East South Central    139     36
+    Middle Atlantic       108    161
+    Mountain              514     45
+    New England            83     57
+    Pacific               513     60
+    South Atlantic        907    217
+    West North Central    209     48
+    West South Central    153     39
+
+  occupancy_status
+    split             train  valid
+    occupancy_status              
+    I                   311     81
+    P                  2684    686
+    S                   158     36
+
+  loan_purpose
+    split         train  valid
+    loan_purpose              
+    C              1223    375
+    N               716    152
+    P              1214    276
+
+  first_time_homebuyer
+    split                 train  valid
+    first_time_homebuyer              
+    N                      2756    697
+    Y                       397    106
+
+  n_borrowers
+    split        train  valid
+    n_borrowers              
+    1.0           1877    505
+    2.0           1276    298
+
+LGD por tramo   [lgd original | lgd_trunc]
+split                train     valid
+lgd       count  3153.0000  803.0000
+          mean      0.5301    0.5853
+          std       0.3011    0.4018
+          min      -1.0222   -0.7409
+          25%       0.3134    0.2825
+          50%       0.5183    0.5429
+          75%       0.7275    0.8328
+          max       2.4084    2.6946
+lgd_trunc count  3153.0000  803.0000
+          mean      0.5214    0.5499
+          std       0.2773    0.3191
+          min       0.0000    0.0000
+          25%       0.3134    0.2825
+          50%       0.5183    0.5429
+          75%       0.7275    0.8328
+          max       1.0000    1.0000
+
+----------------------------------------------------------------------
+Verificaciones:
+  OK  un crédito por fila (loan_id único)
+  OK  sin NaN en los predictores candidatos
+  OK  'division' sin niveles sin asignar
+  OK  'channel_grp' sin niveles sin asignar
+  OK  'property_type_grp' sin niveles sin asignar
+  OK  'n_units_grp' sin niveles sin asignar
+  OK  ningún mes de liquidación está en ambos tramos
+  OK  todo el entrenamiento es anterior a la validación
+  OK  'lgd' sin cambios respecto de lgd_2007.csv
+  OK  'lgd_trunc' dentro de [0, 1]
+  OK  zero_balance_code conserva el formato '02', '03', '09', '15'
+  OK  variables de D6 descartadas
+
+Base guardada: data/processed/lgd_2007_model.csv  (3,956 filas, 52 columnas)
+Flujo muestral: outputs/tables/flujo_muestral.csv

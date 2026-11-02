@@ -1,0 +1,9 @@
+paso,quedan,excluidos,regla
+Créditos en la muestra 2007,50000,,build_dataset_report.txt
+"zero_balance_code en {02, 03, 09, 15}",4484,45516,Solo estos cierres tienen pérdida calculada (guía p. 13)
+actual_loss informado (base lgd_2007.csv),4043,441,actual_loss nulo: créditos con defect_settlement_date
+Sin liquidaciones en los 3 meses previos al corte (D7),4043,0,Corte de desempeño 202603: se excluyen 2026-01 a 2026-03
+Casos completos en los predictores candidatos (D5),3960,83,Se excluyen créditos con NaN en dti o credit_score
+Estados con división censal (D3),3956,4,Se excluye Puerto Rico (PR): no pertenece a ninguna división censal
+  Entrenamiento (liquidación <= 201412) (D4),3153,,Liquidaciones más antiguas
+  Validación (liquidación > 201412) (D4),803,,Liquidaciones más recientes
