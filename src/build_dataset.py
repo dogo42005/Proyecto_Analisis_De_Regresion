@@ -45,6 +45,15 @@ OUT_REPORT = ROOT / "outputs" / "build_dataset_report.txt"
 # bloque el uso de memoria se mantiene bajo (~1 GB) aunque el archivo pese 350 MB.
 CHUNK_SIZE = 300_000
 
+# Corte de desempeño opcional (AAAAMM, texto). Si se indica, se ignoran las
+# filas mensuales posteriores, como si el archivo terminara en ese mes. Sirve
+# para reproducir una entrega anterior con un archivo más nuevo (p. ej. el
+# análisis usa corte 202603 y el archivo descargado llega a 202606).
+# None = usar todo el archivo.
+# Se fija en 202603 (periodo de análisis definido por el grupo): el archivo
+# disponible hoy en Freddie Mac llega a 202606. Ver cleaning_log.md, sección 0.
+PERF_CUTOFF = "202603"
+
 # ---------------------------------------------------------------------------
 # Layouts de columnas (los archivos NO traen encabezado)
 # Fuente: file_layout_july_2026.xlsx y General User Guide (julio 2026).
@@ -213,6 +222,10 @@ def load_last_performance_row(cols):
     reader = pd.read_csv(PERF_FILE, sep="|", header=None, names=cols, dtype=str,
                          encoding="latin-1", chunksize=CHUNK_SIZE)
     for chunk in reader:
+        # Si hay corte, se descartan los meses posteriores ANTES de contar y de
+        # buscar la última fila (los textos AAAAMM se comparan bien en orden).
+        if PERF_CUTOFF is not None:
+            chunk = chunk[chunk["period"] <= PERF_CUTOFF]
         n_rows += len(chunk)
         max_period = max(max_period, int(chunk["period"].max()))
         # Dentro del bloque: ordenar por crédito y período, y quedarse con la
@@ -266,6 +279,8 @@ def main():
 
     # ---- 2. Desempeño: última fila de cada crédito -----------------------
     last, n_perf_rows, max_period = load_last_performance_row(perf_cols)
+    if PERF_CUTOFF is not None:
+        log(f"Corte de desempeño aplicado: se ignoran los meses posteriores a {PERF_CUTOFF}")
     log(f"Desempeño: {n_perf_rows:,} filas mensuales, {len(last):,} créditos")
     log(f"Último período del archivo (corte de desempeño): {max_period}")
 
@@ -280,6 +295,14 @@ def main():
     log("\nRecodificación 'no disponible' -> NaN (sobre todos los créditos unidos):")
     for col, n in changes.items():
         log(f"  {col:<28} {n:>7,}")
+
+    # Regla CLTV < LTV -> cltv = NaN (guía p. 5, registrada en cleaning_log.md):
+    # el CLTV incluye todos los créditos sobre la propiedad, así que no puede ser
+    # menor que el LTV; si lo es, el dato no es confiable. Se aplica DESPUÉS de
+    # recodificar 999, para comparar solo valores reales (con NaN da False).
+    bad_cltv = df["cltv"] < df["ltv"]
+    df.loc[bad_cltv, "cltv"] = np.nan
+    log(f"  {'cltv (regla CLTV < LTV)':<28} {int(bad_cltv.sum()):>7,}")
 
     # ---- (a) Total de créditos -------------------------------------------
     log("\n" + "-" * 70)
