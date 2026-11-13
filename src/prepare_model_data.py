@@ -18,9 +18,9 @@ Qué hace, en orden:
        - outputs/prepare_model_data_report.txt      (el mismo reporte que se imprime)
 
 Las decisiones (D1-D7) están como constantes en la sección "Decisiones".
-Fueron elegidas el 02-11-2026 y deben ser ratificadas por el grupo; si alguna
-cambia, basta con editar la constante y volver a correr el script.
-Detalle de cada decisión: cleaning_log.md.
+Fueron propuestas el 02-11-2026 y ratificadas por el grupo el 13-11-2026; si
+alguna cambia, basta con editar la constante y volver a correr el script.
+Detalle de cada decisión: cleaning_log.md e informe/decisiones.md.
 
 Uso (desde la raíz del repositorio, después de build_dataset.py):
     python src/prepare_model_data.py
@@ -57,7 +57,7 @@ NUMERIC_COLS = [
 ]
 
 # ---------------------------------------------------------------------------
-# Decisiones (por ratificar en grupo)
+# Decisiones (ratificadas por el grupo el 13-11-2026)
 # ---------------------------------------------------------------------------
 # D7: se excluyen las liquidaciones de los meses 2026-01, 2026-02 y 2026-03
 # (los tres meses previos al corte de desempeño 202603, incluido el del corte).

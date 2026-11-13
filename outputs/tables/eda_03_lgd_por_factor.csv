@@ -1,0 +1,82 @@
+factor,nivel,nombre,tramo,n,media,mediana,desv_est,pct_lgd_mayor_1
+occupancy_status,P,Vivienda principal,train,2684,0.507,0.495,0.29,5.253
+occupancy_status,P,Vivienda principal,valid,686,0.555,0.525,0.383,12.828
+occupancy_status,P,Vivienda principal,total,3370,0.517,0.502,0.312,6.795
+occupancy_status,S,Segunda vivienda,train,158,0.533,0.555,0.251,1.899
+occupancy_status,S,Segunda vivienda,valid,36,0.577,0.522,0.343,11.111
+occupancy_status,S,Segunda vivienda,total,194,0.541,0.555,0.27,3.608
+occupancy_status,I,Inversión,train,311,0.73,0.745,0.343,20.9
+occupancy_status,I,Inversión,valid,81,0.844,0.783,0.486,34.568
+occupancy_status,I,Inversión,total,392,0.753,0.76,0.379,23.724
+loan_purpose,P,Compra,train,1214,0.418,0.391,0.282,2.965
+loan_purpose,P,Compra,valid,276,0.527,0.485,0.419,11.957
+loan_purpose,P,Compra,total,1490,0.438,0.406,0.315,4.631
+loan_purpose,N,Refinanc. sin retiro,train,716,0.56,0.562,0.284,5.866
+loan_purpose,N,Refinanc. sin retiro,valid,152,0.573,0.539,0.361,11.842
+loan_purpose,N,Refinanc. sin retiro,total,868,0.562,0.558,0.299,6.912
+loan_purpose,C,Refinanc. con retiro,train,1223,0.624,0.618,0.292,10.711
+loan_purpose,C,Refinanc. con retiro,valid,375,0.633,0.59,0.399,18.4
+loan_purpose,C,Refinanc. con retiro,total,1598,0.626,0.613,0.321,12.516
+property_type_grp,SF,Unifamiliar,train,2243,0.559,0.551,0.314,8.738
+property_type_grp,SF,Unifamiliar,valid,644,0.606,0.554,0.406,15.373
+property_type_grp,SF,Unifamiliar,total,2887,0.569,0.552,0.337,10.218
+property_type_grp,PU,Urbaniz. planificada,train,496,0.391,0.396,0.223,0.403
+property_type_grp,PU,Urbaniz. planificada,valid,73,0.341,0.297,0.319,4.11
+property_type_grp,PU,Urbaniz. planificada,total,569,0.385,0.383,0.237,0.879
+property_type_grp,CO,Condominio/coop.,train,365,0.527,0.538,0.262,1.644
+property_type_grp,CO,Condominio/coop.,valid,65,0.614,0.63,0.344,15.385
+property_type_grp,CO,Condominio/coop.,total,430,0.54,0.543,0.277,3.721
+property_type_grp,MH,Prefabricada,train,49,0.639,0.666,0.277,10.204
+property_type_grp,MH,Prefabricada,valid,21,0.72,0.672,0.429,38.095
+property_type_grp,MH,Prefabricada,total,70,0.663,0.669,0.329,18.571
+channel_grp,R,Directo (retail),train,1131,0.505,0.504,0.286,4.775
+channel_grp,R,Directo (retail),valid,310,0.589,0.535,0.427,15.484
+channel_grp,R,Directo (retail),total,1441,0.523,0.507,0.323,7.078
+channel_grp,TPO,Terceros,train,2022,0.544,0.527,0.308,7.666
+channel_grp,TPO,Terceros,valid,493,0.583,0.545,0.386,14.604
+channel_grp,TPO,Terceros,total,2515,0.552,0.534,0.325,9.026
+first_time_homebuyer,N,No,train,2756,0.546,0.536,0.303,7.329
+first_time_homebuyer,N,No,valid,697,0.603,0.554,0.403,15.925
+first_time_homebuyer,N,No,total,3453,0.557,0.541,0.326,9.065
+first_time_homebuyer,Y,Sí,train,397,0.423,0.395,0.267,1.763
+first_time_homebuyer,Y,Sí,valid,106,0.468,0.438,0.377,8.491
+first_time_homebuyer,Y,Sí,total,503,0.432,0.404,0.294,3.181
+n_units_grp,1,1,train,3084,0.525,0.512,0.299,6.193
+n_units_grp,1,1,valid,757,0.566,0.527,0.39,13.738
+n_units_grp,1,1,total,3841,0.533,0.515,0.319,7.68
+n_units_grp,2-4,2 a 4,train,69,0.769,0.761,0.302,26.087
+n_units_grp,2-4,2 a 4,valid,46,0.898,0.776,0.472,34.783
+n_units_grp,2-4,2 a 4,total,115,0.82,0.769,0.383,29.565
+n_borrowers,1,1,train,1877,0.56,0.554,0.308,8.258
+n_borrowers,1,1,valid,505,0.581,0.541,0.396,14.059
+n_borrowers,1,1,total,2382,0.564,0.552,0.329,9.488
+n_borrowers,2,2,train,1276,0.486,0.471,0.285,4.232
+n_borrowers,2,2,valid,298,0.592,0.543,0.413,16.443
+n_borrowers,2,2,total,1574,0.506,0.489,0.316,6.544
+division,New England,New England,train,83,0.47,0.459,0.267,4.819
+division,New England,New England,valid,57,0.62,0.586,0.327,10.526
+division,New England,New England,total,140,0.531,0.505,0.301,7.143
+division,Middle Atlantic,Middle Atlantic,train,108,0.559,0.565,0.321,11.111
+division,Middle Atlantic,Middle Atlantic,valid,161,0.743,0.7,0.434,24.224
+division,Middle Atlantic,Middle Atlantic,total,269,0.669,0.636,0.402,18.959
+division,East North Central,East North Central,train,527,0.678,0.696,0.345,18.406
+division,East North Central,East North Central,valid,140,0.745,0.741,0.434,27.857
+division,East North Central,East North Central,total,667,0.692,0.701,0.366,20.39
+division,West North Central,West North Central,train,209,0.523,0.504,0.322,8.134
+division,West North Central,West North Central,valid,48,0.474,0.49,0.35,8.333
+division,West North Central,West North Central,total,257,0.514,0.503,0.327,8.171
+division,South Atlantic,South Atlantic,train,907,0.559,0.554,0.291,6.284
+division,South Atlantic,South Atlantic,valid,217,0.543,0.503,0.358,11.521
+division,South Atlantic,South Atlantic,total,1124,0.556,0.546,0.305,7.295
+division,East South Central,East South Central,train,139,0.455,0.386,0.369,9.353
+division,East South Central,East South Central,valid,36,0.333,0.334,0.321,0.0
+division,East South Central,East South Central,total,175,0.43,0.384,0.362,7.429
+division,West South Central,West South Central,train,153,0.315,0.259,0.285,1.307
+division,West South Central,West South Central,valid,39,0.491,0.471,0.35,10.256
+division,West South Central,West South Central,total,192,0.35,0.299,0.307,3.125
+division,Mountain,Mountain,train,514,0.476,0.494,0.223,0.584
+division,Mountain,Mountain,valid,45,0.41,0.374,0.315,2.222
+division,Mountain,Mountain,total,559,0.471,0.485,0.232,0.716
+division,Pacific,Pacific,train,513,0.471,0.47,0.231,0.78
+division,Pacific,Pacific,valid,60,0.343,0.313,0.288,3.333
+division,Pacific,Pacific,total,573,0.458,0.458,0.241,1.047

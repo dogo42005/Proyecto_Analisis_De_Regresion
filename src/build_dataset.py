@@ -137,9 +137,9 @@ PERF_NUMERIC = [
     "zero_balance_removal_upb", "delinquent_accrued_interest",
 ]
 
-# Predictores candidatos PROVISIONALES (solo información de originación).
-# Esta lista se usa únicamente para el conteo (d). La lista definitiva se
-# decide en grupo; basta con editarla aquí y volver a correr el script.
+# Predictores candidatos (solo información de originación). Lista ratificada
+# por el grupo el 13-11-2026 (informe/decisiones.md). La usan el conteo (d) y
+# prepare_model_data.py; si cambia, se edita aquí y se vuelven a correr ambos.
 CANDIDATE_PREDICTORS = [
     # numéricos
     "credit_score", "ltv", "cltv", "dti", "mi_pct", "orig_upb",

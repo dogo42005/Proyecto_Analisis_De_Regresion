@@ -1,0 +1,171 @@
+% =====================================================================
+% Hito 2 - Avance (máximo 2 páginas, sin portada, con nombres)
+% EYP2307 Análisis de Regresión, 2026-2
+%
+% Cómo usar en Overleaf: subir esta carpeta completa (main.tex + figuras/).
+% Cada sección indica qué rol la escribe y cuánto espacio aproximado tiene.
+% Las figuras se guardan en figuras/ con el nombre indicado; mientras no
+% existan, aparece un recuadro en su lugar (el documento compila igual).
+% Las cifras de la Tabla 1 salen de outputs/tables/flujo_muestral.csv.
+% =====================================================================
+\documentclass[10pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-tabla,es-nodecimaldot]{babel}
+\usepackage[a4paper,margin=1.5cm]{geometry}
+\usepackage{lmodern}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{float}   % [H] = la figura o tabla queda donde se escribe
+\usepackage[font=small,labelfont=bf]{caption}
+\usepackage[hidelinks]{hyperref}
+\usepackage{enumitem}
+\setlist{nosep}
+\setlength{\parskip}{2pt}
+\setlength{\parindent}{0pt}
+% Deja cortar líneas largas (p. ej. la URL) sin salirse del margen.
+\setlength{\emergencystretch}{3em}
+% Títulos de sección más compactos (para caber en 2 páginas).
+\makeatletter
+\renewcommand{\section}{\@startsection{section}{1}{0pt}%
+  {-1.2ex plus -0.5ex}{0.5ex}{\normalfont\large\bfseries}}
+\makeatother
+% Menos espacio alrededor de figuras y tablas.
+\setlength{\textfloatsep}{6pt plus 2pt}
+\setlength{\intextsep}{6pt plus 2pt}
+\setlength{\abovecaptionskip}{3pt}
+
+% Figura con recuadro de reemplazo mientras el archivo no exista.
+\newcommand{\figura}[2]{%
+  \IfFileExists{#1}{\includegraphics[width=#2]{#1}}%
+  {\fbox{\parbox[c][4cm][c]{0.95#2}{\centering\small Falta \texttt{#1}}}}}
+
+\begin{document}
+
+\begin{center}
+  {\large\bfseries Modelo de regresión para la pérdida dado el incumplimiento (LGD)\\
+  en créditos hipotecarios de tasa fija originados en 2007}\\[2pt]
+  EYP2307 Análisis de Regresión --- Avance (Hito 2)\\
+  % Verificar la grafía de los nombres (Entrega 1 dice "Amelie"; el boceto, "Amelia").
+  \textbf{Integrantes:} Diego Olivares, Amelie Ramírez, Enzo Balboni y Joaquín Ortuzar
+\end{center}
+
+% ---------------------------------------------------------------------
+\section{Introducción y datos}
+% Rol 4. BORRADOR dejado por el Rol 2 (Diego), redactado a partir de la propuesta
+% del Hito 1 (Entrega 1 y boceto). El Rol 4 lo revisa, escribe la motivación y lo termina.
+
+Este trabajo modela la pérdida dado el incumplimiento (LGD) en créditos hipotecarios de
+tasa fija originados en 2007 y adquiridos por Freddie Mac. La pregunta es: \emph{¿qué
+características de originación del crédito y de la propiedad explican la LGD de estas
+hipotecas que terminaron en pérdida hasta marzo de 2026?}
+\textit{[Rol 4: una o dos líneas de motivación, escritas por el grupo.]}
+
+\textbf{Datos.} Se usa la muestra de créditos originados en 2007 del \emph{Single-Family
+Loan-Level Dataset} de Freddie Mac, de acceso público y gratuito (con registro) en
+\url{https://www.freddiemac.com/research/datasets/sf-loanlevel-dataset}.
+La muestra tiene
+dos archivos: originación (50.000 créditos, uno por fila) y desempeño mensual (cerca de
+3 millones de registros), sin encabezado, delimitados por ``|'' y unidos por el
+identificador del crédito (\emph{Loan Sequence Number}). Las variables y sus códigos se
+definen en la \emph{General User Guide} de Freddie Mac (julio de 2026).
+
+\textbf{Respuesta y predictores.} La respuesta es
+$\mathrm{LGD} = \textit{Actual Loss} / \textit{Zero Balance Removal UPB}$, es decir, la
+fracción del saldo adeudado al liquidar el crédito que se pierde. La población son los
+créditos con \emph{Zero Balance Code} 02, 03, 09 o 15 (venta a terceros, venta corta o
+castigo, venta de la propiedad recuperada y venta de cartera) y con \emph{Actual Loss}
+informado. Los predictores candidatos son variables conocidas al otorgar el crédito:
+puntaje de crédito, LTV, CLTV, DTI, tasa de interés, porcentaje de seguro hipotecario y
+monto original (continuos); y propósito del préstamo, ocupación, tipo de propiedad, número
+de unidades, región, canal, primera vivienda y número de deudores (categóricos). No se usan
+los componentes de la pérdida (precio de venta, gastos, recuperaciones del seguro), porque
+forman parte del cálculo de la respuesta (fuga de información).
+
+\textbf{Frecuencia y periodo.} La unidad de observación es el crédito (corte transversal),
+cuyo desempeño se registra con frecuencia mensual. Los créditos se originaron en 2007 y su
+desempeño se observa hasta marzo de 2026; las liquidaciones con pérdida ocurrieron entre
+2008 y 2025. El eje temporal es el mes de liquidación (\emph{Zero Balance Effective Date}),
+que se usa para la validación: el 20\,\% de los créditos liquidados más recientemente forma
+la muestra de validación. Se excluyen las liquidaciones de los tres meses previos al corte,
+para las que Freddie Mac aún no informa la pérdida.
+
+% ---------------------------------------------------------------------
+\section{Limpieza de datos}
+% Rol 1 (párrafo) + Tabla 1. ~6 líneas de texto.
+
+\textit{[Rol 1: párrafo de limpieza. Puntos: códigos ``no disponible'',
+casos completos y advertencia sobre DTI, divisiones censales y agrupaciones, partición
+temporal. Detalle en cleaning\_log.md.]}
+
+\begin{table}[H]
+  \centering\small
+  \caption{Flujo muestral.}
+  \begin{tabular}{lrr}
+    \toprule
+    Paso & Quedan & Excluidos \\
+    \midrule
+    Créditos en la muestra 2007                                  & 50.000 & --- \\
+    Cierre con pérdida (Zero Balance Code 02, 03, 09, 15)        &  4.484 & 45.516 \\
+    Actual Loss informado                                         &  4.043 &    441 \\
+    Sin liquidaciones en los 3 meses previos al corte (202603)    &  4.043 &      0 \\
+    Sin faltantes en los predictores candidatos                   &  3.960 &     83 \\
+    Estados con división censal (sin Puerto Rico)                 &  3.956 &      4 \\
+    \midrule
+    \quad Entrenamiento (liquidación hasta 2014-12)               &  3.153 & --- \\
+    \quad Validación (liquidación desde 2015-01)                  &    803 & --- \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+% ---------------------------------------------------------------------
+\section{Análisis exploratorio}
+% Rol 2. Figura 1 (varios paneles en una sola imagen) + ~8 líneas.
+% Guardar como figuras/figura1.pdf (o .png, cambiando la extensión abajo).
+
+\begin{figure}[H]
+  \centering
+  \figura{figuras/figura1.pdf}{\linewidth}
+  \caption{\textit{[Rol 2: descripción de los paneles.]}}
+\end{figure}
+
+\textit{[Rol 2: hallazgos del EDA, faltantes y atípicos, transformaciones evaluadas
+para los predictores y comparación de la LGD de los créditos sin DTI.]}
+
+% ---------------------------------------------------------------------
+\section{Modelo preliminar y diagnóstico}
+% Rol 3. Tabla 2 + Figura 2 (paneles de diagnóstico) + ~8 líneas.
+
+\begin{table}[H]
+  \centering\small
+  \caption{Modelos OLS anidados ajustados con entrenamiento ($n = 3.153$); error de
+  validación contra la LGD original ($n = 803$).}
+  \begin{tabular}{lcccccc}
+    \toprule
+    Modelo & Parámetros & $R^2$ ajustado & AIC & BIC & RMSE val. & MAE val. \\
+    \midrule
+    Completo & --- & --- & --- & --- & --- & --- \\
+    Reducido & --- & --- & --- & --- & --- & --- \\
+    \midrule
+    \multicolumn{7}{l}{Prueba F (reducido vs.\ completo): $F = $ ---, $p = $ ---} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{figure}[H]
+  \centering
+  \figura{figuras/figura2.pdf}{\linewidth}
+  \caption{\textit{[Rol 3: residuos vs.\ ajustados, QQ-plot, residuos vs.\ fecha de
+  liquidación, apalancamiento y distancia de Cook.]}}
+\end{figure}
+
+\textit{[Rol 3: comparación de modelos, diagnóstico (supuestos, VIF, atípicos e
+influyentes) y resultado de la validación.]}
+
+% ---------------------------------------------------------------------
+\section{Conclusiones y próximos pasos}
+% Rol 4 (con el grupo). ~4 líneas.
+
+\textit{[Rol 4: conclusiones breves del avance y qué falta para el póster.]}
+
+\end{document}

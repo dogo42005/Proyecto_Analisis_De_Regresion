@@ -70,7 +70,7 @@ Confirmado con la guía (p. 13): Actual Loss se calcula **solo** para `zero_bala
 Verificación: en los 4.043 casos, `actual_loss` = removal UPB + net sale proceeds + delinquent accrued interest
 + total expenses + MI recoveries + non-MI recoveries (fórmula de la guía), con diferencia < $1 en el 100 %.
 
-## 4. LGD fuera de [0, 1] — se mantiene `lgd` y se agrega `lgd_trunc` (D1, por ratificar en grupo)
+## 4. LGD fuera de [0, 1] — se mantiene `lgd` y se agrega `lgd_trunc` (D1, ratificada por el grupo el 13-11-2026)
 
 | Tramo | Casos completos (d) | Todos con LGD (c) | Base de modelamiento (3.956) |
 |---|---|---|---|
@@ -85,9 +85,10 @@ Verificación: en los 4.043 casos, `actual_loss` = removal UPB + net sale procee
 | `lgd` se mantiene sin cambios | 0 excluidos | Los valores fuera de [0, 1] no son errores: `actual_loss` calza con la fórmula de la guía en el 100 % (sección 3). LGD > 1 = gastos e intereses mayores que lo recuperado; LGD < 0 = recuperaciones mayores que el saldo. Excluirlos sesgaría la muestra. |
 | Nueva columna `lgd_trunc` = `lgd` truncada a [0, 1] | 76 llevados a 0; 329 llevados a 1 | Respuesta para el modelo competidor (GLM de respuesta fraccional), que exige valores en [0, 1]. Se crea en `prepare_model_data.py`; `lgd` no se sobrescribe. |
 
-Pendiente para el grupo: contra qué variable (`lgd` o `lgd_trunc`) se mide el error de validación, la misma para todos los modelos.
+Decisión del grupo (13-11-2026, `informe/decisiones.md`): la respuesta del modelo es `lgd` original y el error de
+validación se mide contra `lgd` en todos los modelos. `lgd_trunc` queda en la base, pero no se usa en el Hito 2.
 
-## 5. Variables descartadas por no tener información (D6, por ratificar en grupo)
+## 5. Variables descartadas por no tener información (D6, ratificada por el grupo el 13-11-2026)
 
 Se eliminan de la base de modelamiento en `prepare_model_data.py`; siguen en `lgd_2007.csv`.
 
@@ -95,7 +96,7 @@ Se eliminan de la base de modelamiento en `prepare_model_data.py`; siguen en `lg
 - `amortization_type`: todos FRM en la base de LGD (sin variación).
 - `eltv`: vacía en 3.825 de los 4.043 (solo existe desde 2017).
 
-## 6. Estados → divisiones censales (D3, por ratificar en grupo)
+## 6. Estados → divisiones censales (D3, ratificada por el grupo el 13-11-2026)
 
 Fuente: U.S. Census Bureau, *Census Regions and Divisions of the United States*,
 https://www2.census.gov/geo/pdfs/maps-data/maps/reference/us_regdiv.pdf (consultado el 02-11-2026).
@@ -110,7 +111,7 @@ La tabla está en `src/prepare_model_data.py` (`CENSUS_DIVISIONS`) y crea la col
 Créditos por división (4.043 con LGD): New England 145, Middle Atlantic 277, East North Central 678,
 West North Central 264, South Atlantic 1.146, East South Central 176, West South Central 198, Mountain 574, Pacific 581.
 
-## 7. Faltantes: casos completos (D5, por ratificar en grupo)
+## 7. Faltantes: casos completos (D5, ratificada por el grupo el 13-11-2026)
 
 | Qué | Casos | Por qué |
 |---|---|---|
@@ -119,9 +120,10 @@ West North Central 264, South Atlantic 1.146, East South Central 176, West South
 
 **Advertencia para el informe:** según la guía (p. 5), `dti` = 999 significa DTI > 65 % o dato no disponible
 (sección 2). Los 81 excluidos por `dti` **no son faltantes al azar**: probablemente incluyen a los deudores más
-endeudados. Rol 2 compara su LGD con la del resto antes de cerrar la decisión.
+endeudados. Decisión del grupo (13-11-2026): se mantienen los casos completos en el Hito 2 y se reporta como
+limitación; Rol 2 compara la LGD de los 81 con la del resto, y según eso se revisa para el póster.
 
-## 8. Agrupación de factores con niveles escasos (D3, por ratificar en grupo)
+## 8. Agrupación de factores con niveles escasos (D3, ratificada por el grupo el 13-11-2026)
 
 Columnas nuevas en `prepare_model_data.py`; las originales (`channel`, `property_type`, `n_units`) se conservan.
 Conteos sobre la base de modelamiento (3.956).
@@ -133,7 +135,7 @@ Conteos sobre la base de modelamiento (3.956).
 | `n_units_grp` | 1 → "1"; 2, 3, 4 → "2-4" | 1: 3.841; 2: 92, 3: 13, 4: 10 → 2-4: 115 | 3 y 4 unidades suman 23 casos en esta base. |
 | `division` | Estado → 9 divisiones censales | 51 niveles → 9 | Ver sección 6. |
 
-## 9. Partición temporal 80/20 (D4, por ratificar en grupo)
+## 9. Partición temporal 80/20 (D4, ratificada por el grupo el 13-11-2026)
 
 Eje temporal: mes de liquidación (`zero_balance_effective_date`, AAAAMM). Columna `split` en `prepare_model_data.py`.
 

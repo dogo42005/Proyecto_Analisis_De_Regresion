@@ -10,9 +10,12 @@ los apuntes y scripts de ejemplo del curso (en R) están fuera del repo, en
 
 - **Se trabaja por etapas y en conjunto.** No adelantar modelamiento, transformaciones, interpretación ni
   conclusiones. Si algo requiere una decisión metodológica: describir las opciones y esperar.
-- **Restricción de IA del curso:** la IA solo puede apoyar en programación/depuración, redacción de textos
-  ya escritos por el grupo y aclaración de conceptos. Puede generar el análisis estadístico, la
-  interpretación, las conclusiones ni referencias pero solo pedido por el estudiante con previa verificación. Al final se entrega una declaración de uso de IA.
+- **Restricción de IA del curso (enunciado, sección "Uso de Inteligencia Artificial"):** el uso de IA es
+  RESTRINGIDO. Se permite solo como apoyo en programación y depuración de código elaborado por el grupo,
+  mejora de la redacción de textos previamente escritos por el grupo, o aclaración de conceptos o métodos.
+  **No está permitido** usar IA para generar el análisis estadístico, la interpretación de resultados, las
+  conclusiones, ni referencias no verificadas. Con el póster se entrega la declaración "Uso de Inteligencia
+  Artificial" (máx. 1 página: herramienta, propósito, parte del trabajo y verificaciones realizadas).
 - Cada decisión de limpieza se registra en `cleaning_log.md` (qué, cuántos casos, por qué).
 - Código comentado para que cualquier integrante lo pueda explicar en la defensa oral.
 - Consultar antes de instalar o descargar algo externo.
@@ -35,26 +38,33 @@ los apuntes y scripts de ejemplo del curso (en R) están fuera del repo, en
 - LGD = `actual_loss / zero_balance_removal_upb`, última fila de cada crédito, `zero_balance_code` ∈
   {02,03,09,15}, `actual_loss` no nulo (confirmado con la guía, p. 13).
 
-## Estado
+## Estado (13-11-2026)
 
-- [x] Etapa 1 · Tarea 1: estructura de carpetas, cleaning_log.md
-- [x] Etapa 1 · Tarea 2: `src/build_dataset.py` → 4.043 créditos con LGD; 3.960 sin NaN en candidatos provisionales
-- [ ] Etapa 1 · Tarea 3: EDA descriptivo (histograma LGD, matriz de dispersión, faltantes) — **solo gráficos, sin interpretar**, después de revisar la tarea 2 con el grupo
+- [x] Hito 1 entregado (`entregas/hito1/`).
+- [x] Rol 1 (datos): `build_dataset.py` + `prepare_model_data.py` → `data/processed/lgd_2007_model.csv`
+  (3.956 créditos; 3.153 entrenamiento / 803 validación). Revisado y verificado.
+- [ ] Rol 2 (EDA + transformaciones de predictores, **a cargo de Diego**) · Rol 3 (dos OLS anidados,
+  diagnóstico, validación) · Rol 4 (integración del avance). Avance: lun 16 nov.
+- **Avance del Rol 2** (`src/eda.py`, una función por paso; `python src/eda.py` rehace todo):
+  - [x] Paso 1 distribución de la LGD · [x] Paso 2 descriptivos y dispersión · [x] Paso 3 LGD por factor ·
+    [x] Paso 4 correlaciones y atípicos (entrenamiento).
+  - [ ] Paso 5 transformaciones de predictores (log / Box-Cox; candidato: monto original; `mi_pct` tiene
+    66 % de ceros, no admite log) · [ ] Paso 6 LGD de los 81 sin DTI vs. el resto (`lgd_2007.csv`) ·
+    [ ] Figura 1 final (varios paneles, coma decimal) · [ ] juntar los párrafos en uno corto para `main.tex`.
+  - Método de trabajo: Claude programa y explica conceptos; Diego responde un cuestionario por paso con su
+    interpretación; Claude avisa si una respuesta no calza con los datos y redacta el párrafo con sus
+    respuestas. Párrafos y registro de IA en `informe/reportes_roles/rol2_eda.md`.
+- Informe en Overleaf: `informe/avance/main.tex`. La introducción, los datos y la frecuencia y periodo
+  quedaron como borrador para el Rol 4 (falta la motivación).
+- Los CSV versionados salieron de la entrega de Freddie Mac a 202606 con corte 202603. El crudo local
+  de este PC es la entrega a 202603: si se vuelve a correr `build_dataset.py` aquí, cambian 5 valores de LGD.
 
-## Decisiones pendientes (a resolver en grupo)
+## Decisiones tomadas (13-11-2026, detalle en `informe/decisiones.md`)
 
-1. **LGD < 0 (77) y > 1 (334):** opciones — dejarlos tal cual; truncar a [0, 1]; excluirlos; modelar
-   con una transformación/modelo para respuesta acotada (p. ej. logit o regresión beta, que exigiría
-   tratar 0 y 1). Afecta qué supuestos se verifican luego.
-2. **Lista definitiva de predictores candidatos.** La provisional (`CANDIDATE_PREDICTORS`) usa solo
-   variables de originación. Alternativa: agregar variables del cierre (tipo de cierre `zero_balance_code`,
-   `loan_age` al cierre, tiempo entre DDLPI y cierre, `mi_pct` vs. MI recoveries). Ojo con usar como
-   predictor algo que es parte del cálculo de la pérdida (fuga de información).
-3. **Factores con niveles escasos:** `channel` (C = 3, B = 2), `property_type` (CP = 3, MH = 71),
-   `n_units` (3–4 unidades = 26), `property_state` (51 niveles). Opciones: agrupar niveles, agrupar estados
-   por región, o excluir.
-4. **Fecha para el corte temporal 80/20:** todos los créditos se originaron en 2007, así que el orden útil
-   es la fecha de cierre (`zero_balance_effective_date`). Cierres concentrados en 2009–2014.
-5. **Tratamiento de NaN** en `dti` (81) y `credit_score` (2): eliminar casos completos (actual) o imputar.
-6. Variables sin información en 2007: `vantage_score_4`, `property_valuation_method` (100 % NA),
-   `amortization_type` (todo FRM), `eltv` (casi todo NA). Propuesta: no usarlas.
+- Respuesta: `lgd` original (sin truncar); RMSE/MAE de validación contra `lgd`.
+- Hito 2: dos OLS anidados (completo vs. reducido) con prueba F, AIC y BIC, ajustados solo con entrenamiento.
+- Transformaciones: Rol 2 evalúa log/Box-Cox de predictores; la respuesta no se transforma en el Hito 2.
+- EDA: describe toda la base; las decisiones se toman mirando solo entrenamiento.
+- Faltantes: casos completos (−83), con comparación de la LGD de los 81 sin DTI como limitación.
+- Ratificado lo del Rol 1: divisiones censales sin PR, agrupaciones de factores, corte ≤ 2014-12,
+  variables descartadas (D6) y la lista `CANDIDATE_PREDICTORS`.

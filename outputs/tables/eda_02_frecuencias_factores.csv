@@ -1,0 +1,28 @@
+factor,nivel,n_train,n_valid,n_total,pct_total
+occupancy_status,I,311,81,392,9.9
+occupancy_status,P,2684,686,3370,85.2
+occupancy_status,S,158,36,194,4.9
+loan_purpose,C,1223,375,1598,40.4
+loan_purpose,N,716,152,868,21.9
+loan_purpose,P,1214,276,1490,37.7
+property_type_grp,CO,365,65,430,10.9
+property_type_grp,MH,49,21,70,1.8
+property_type_grp,PU,496,73,569,14.4
+property_type_grp,SF,2243,644,2887,73.0
+channel_grp,R,1131,310,1441,36.4
+channel_grp,TPO,2022,493,2515,63.6
+first_time_homebuyer,N,2756,697,3453,87.3
+first_time_homebuyer,Y,397,106,503,12.7
+n_units_grp,1,3084,757,3841,97.1
+n_units_grp,2-4,69,46,115,2.9
+n_borrowers,1,1877,505,2382,60.2
+n_borrowers,2,1276,298,1574,39.8
+division,East North Central,527,140,667,16.9
+division,East South Central,139,36,175,4.4
+division,Middle Atlantic,108,161,269,6.8
+division,Mountain,514,45,559,14.1
+division,New England,83,57,140,3.5
+division,Pacific,513,60,573,14.5
+division,South Atlantic,907,217,1124,28.4
+division,West North Central,209,48,257,6.5
+division,West South Central,153,39,192,4.9
