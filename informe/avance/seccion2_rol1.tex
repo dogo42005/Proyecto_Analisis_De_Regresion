@@ -1,0 +1,15 @@
+% Sección 2 (Rol 1: Joaquín). Reemplaza el marcador del párrafo de \section{Limpieza de datos}
+% en main.tex; la Tabla 1 (flujo muestral) ya está en main.tex.
+% BORRADOR para revisión de Joaquín: resume pasos ya documentados en cleaning_log.md
+% (secciones 1 a 9) y ratificados en informe/decisiones.md; no agrega decisiones nuevas.
+Se unieron ambos archivos por el identificador del crédito y se tomó la última fila de
+desempeño de cada uno, con corte en marzo de 2026 (Tabla~1). Los códigos de ``no disponible''
+(por ejemplo, 9999 en el puntaje de crédito y 999 en el DTI) se recodificaron como faltantes, y
+se descartaron cuatro variables sin información en 2007. Se excluyeron 83 créditos con datos
+faltantes en los predictores (81 sin DTI y 2 sin puntaje); según la guía, el código 999 del DTI
+también se usa para valores mayores que 65\,\%. Se excluyeron además 4 créditos de Puerto Rico,
+que no pertenece a ninguna división censal. Los estados se agruparon en 9 divisiones censales y
+se unieron niveles con pocos casos: canal directo frente a terceros, cooperativas con
+condominios y viviendas de 2 a 4 unidades. Las LGD fuera de $[0, 1]$ no se excluyeron, porque
+son pérdidas reales que calzan con la fórmula de la guía. La partición 80/20 sigue el orden
+temporal del mes de liquidación.

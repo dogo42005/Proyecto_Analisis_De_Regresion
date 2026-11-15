@@ -1,0 +1,26 @@
+,estimacion,ee_clasico,p_clasico,ee_hc3,p_hc3,cambia_significancia_5pct
+Intercept,1.97994,0.15593,0.0,0.16483,0.0,False
+"C(loan_purpose, Treatment('P'))[T.C]",0.12423,0.01166,0.0,0.01193,0.0,False
+"C(loan_purpose, Treatment('P'))[T.N]",0.07778,0.01227,0.0,0.01214,0.0,False
+"C(occupancy_status, Treatment('P'))[T.I]",0.05133,0.01623,0.00158,0.01787,0.00408,False
+"C(occupancy_status, Treatment('P'))[T.S]",0.06197,0.02002,0.00198,0.0189,0.00104,False
+"C(division, Treatment('South Atlantic'))[T.East North Central]",0.03584,0.01381,0.00948,0.01507,0.01738,False
+"C(division, Treatment('South Atlantic'))[T.East South Central]",-0.14665,0.02217,0.0,0.02552,0.0,False
+"C(division, Treatment('South Atlantic'))[T.Middle Atlantic]",-0.0054,0.02473,0.82722,0.02447,0.82538,False
+"C(division, Treatment('South Atlantic'))[T.Mountain]",-0.04169,0.01349,0.00202,0.01244,0.0008,False
+"C(division, Treatment('South Atlantic'))[T.New England]",-0.06454,0.02766,0.01968,0.02733,0.01818,False
+"C(division, Treatment('South Atlantic'))[T.Pacific]",-0.02882,0.01396,0.03903,0.01321,0.02911,False
+"C(division, Treatment('South Atlantic'))[T.West North Central]",-0.10842,0.01905,0.0,0.02036,0.0,False
+"C(division, Treatment('South Atlantic'))[T.West South Central]",-0.23298,0.02141,0.0,0.02128,0.0,False
+"C(n_units_grp, Treatment('1'))[T.2-4]",0.15158,0.03023,0.0,0.03173,0.0,False
+"C(n_borrowers, Treatment('1'))[T.2]",-0.03572,0.00898,7e-05,0.0088,5e-05,False
+"C(property_type_grp, Treatment('SF'))[T.CO]",-0.00219,0.01417,0.87713,0.01351,0.87125,False
+"C(property_type_grp, Treatment('SF'))[T.MH]",0.12159,0.03535,0.00059,0.0368,0.00095,False
+"C(property_type_grp, Treatment('SF'))[T.PU]",-0.06137,0.01297,0.0,0.01168,0.0,False
+"C(channel_grp, Treatment('R'))[T.TPO]",0.02307,0.00907,0.01098,0.0089,0.00955,False
+np.log(orig_upb),-0.17413,0.00997,0.0,0.01086,0.0,False
+ltv,0.00683,0.00062,0.0,0.00077,0.0,False
+con_seguro,0.03159,0.02923,0.27983,0.02827,0.26381,False
+mi_pct,-0.01126,0.00112,0.0,0.00113,0.0,False
+orig_interest_rate,0.05679,0.01044,0.0,0.01059,0.0,False
+credit_score,-0.00032,8e-05,0.00011,9e-05,0.00032,False

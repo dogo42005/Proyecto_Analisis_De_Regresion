@@ -136,6 +136,12 @@ Interpretación: Amelie.
 > el modelo se estima con DTI de hasta 65 %, no debería usarse para deudores con un DTI mayor, ya que eso sería
 > extrapolar fuera del rango observado.
 
+## Texto para main.tex (sección 3)
+
+Archivo listo para pegar: `informe/avance/seccion3_rol2.tex` (Figura 1 con su pie y un párrafo). El párrafo condensa
+los textos de los pasos 1 a 6 de este reporte, sin interpretación nueva. **Pendiente:** que Diego (pasos 1–4) y
+Amelie (pasos 5–6) lo aprueben antes de integrarlo.
+
 ## Uso de IA
 
 | Herramienta | Propósito | Parte del trabajo | Verificación |
@@ -151,3 +157,4 @@ Interpretación: Amelie.
 | Claude Code | Redacción | Párrafos del paso 5. **Método nuevo (desde el 14-11):** la IA entregó preguntas guía abiertas y explicó los criterios de lectura; para `mi_pct` presentó las alternativas típicas para variables con muchos ceros, con sus ventajas y desventajas. Amelie escribió su interpretación con sus palabras y eligió. La IA verificó las cifras y la lectura, avisó cuando algo no calzaba (perfil de Box-Cox: argumento circular; LTV/CLTV: la mejora de r no era nula y la tendencia no es monótona) y mejoró la redacción. Las decisiones H, I y J son de Amelie | Cifras contrastadas con `eda_05_*` |
 | Claude Code | Programación | Paso 6 en `src/eda.py` (tabla y boxplots con/sin DTI, pruebas de Welch y Mann-Whitney); cálculo de la LGD con y sin los 81 | Cifras contrastadas con `eda_06_lgd_sin_dti.csv` |
 | Claude Code | Redacción | Párrafo del paso 6 con el método nuevo. La IA avisó que: la diferencia en % LGD > 1 no es concluyente por el n chico; n chico implica imprecisión, no sesgo; "sesga bastante" no calzaba con los datos (la LGD casi no cambia sin los 81). La limitación por DTI > 65 % la propuso Amelie tras una pregunta guía | Cifras contrastadas con la tabla |
+| Claude Code | Redacción | Párrafo de la sección 3 de `main.tex` y pie de la Figura 1 (15-11, sesión de Diego): la IA condensó los párrafos ya aprobados de los pasos 1 a 6, sin agregar interpretación nueva | Cifras contrastadas con `eda_0*.csv` y con los párrafos de los pasos 1 a 6 |

@@ -1,0 +1,4 @@
+,n,rmse,mae,error_medio,r2_fuera_de_muestra
+entrenamiento,3153.0,0.2378,0.1873,0.0,
+validacion,803.0,0.3587,0.2778,0.0128,0.217
+nulo_en_validacion,803.0,0.4053,0.3154,0.0552,

@@ -1,0 +1,29 @@
+% Sección 3 (Rol 2: Diego, pasos 1-4; Amelie, pasos 5-6). Reemplaza el cuerpo de
+% \section{Análisis exploratorio} en main.tex (la figura y el marcador del párrafo).
+% Párrafo condensado de los textos ya aprobados en informe/reportes_roles/rol2_eda.md;
+% no agrega interpretación nueva. Cifras: outputs/tables/eda_0*.csv.
+\begin{figure}[H]
+  \centering
+  \figura{figuras/figura1.pdf}{\linewidth}
+  \caption{(a) Distribución de la LGD por tramo (densidad). (b) LGD frente al monto original
+  (escala logarítmica) y (c) frente al LTV, en entrenamiento, con tendencia LOWESS. (d) LGD de
+  los créditos con y sin DTI por tramo ($n$ entre paréntesis). Las líneas punteadas marcan
+  LGD $= 0$ y LGD $= 1$.}
+\end{figure}
+
+La LGD tiene cola hacia la derecha (media 0,541; mediana 0,522): el 1,9\,\% es negativa y el
+8,3\,\%, mayor que 1. La validación es más dispersa que el entrenamiento (desviación estándar
+0,40 frente a 0,30) y tiene más LGD sobre 1 (14,9\,\% frente a 6,6\,\%), por lo que se espera
+un error mayor fuera de muestra (Figura~1a). Las decisiones se tomaron solo con entrenamiento.
+La LGD baja con el monto original, sobre todo en los montos bajos, que además son los más
+variables; se usa log(monto), porque su relación con la LGD es la más cercana a una recta
+(Figura~1b; $r = -0{,}36$ frente a $-0{,}31$ en escala original) y es más interpretable que
+Box-Cox ($\lambda = 0{,}35$). La relación con el LTV no es monótona (Figura~1c), así que ninguna
+transformación la endereza, y el resto de los predictores queda en escala original. El LTV está
+fuertemente correlacionado con el CLTV ($r = 0{,}85$) y con el seguro hipotecario ($r = 0{,}77$).
+El seguro vale 0 en dos tercios de los créditos, por lo que entra como una indicadora de tener
+seguro más el porcentaje de cobertura. Entre los factores, la LGD mediana es mayor en créditos
+de inversión, refinanciamientos con retiro de efectivo y viviendas de 2 a 4 unidades. Las 21 LGD
+atípicas (0,7\,\%) son pérdidas reales y se mantienen. Los 81 créditos sin DTI tienen una LGD
+similar al resto (Figura~1d; Welch y Mann-Whitney, $p \geq 0{,}75$), aunque podrían
+corresponder a deudores con DTI mayor que 65\,\%.

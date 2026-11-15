@@ -38,24 +38,27 @@ los apuntes y scripts de ejemplo del curso (en R) están fuera del repo, en
 - LGD = `actual_loss / zero_balance_removal_upb`, última fila de cada crédito, `zero_balance_code` ∈
   {02,03,09,15}, `actual_loss` no nulo (confirmado con la guía, p. 13).
 
-## Estado (13-11-2026)
+## Estado (15-11-2026)
 
 - [x] Hito 1 entregado (`entregas/hito1/`).
-- [x] Rol 1 (datos): `build_dataset.py` + `prepare_model_data.py` → `data/processed/lgd_2007_model.csv`
+- [x] Rol 1 (datos, Joaquín): `build_dataset.py` + `prepare_model_data.py` → `data/processed/lgd_2007_model.csv`
   (3.956 créditos; 3.153 entrenamiento / 803 validación). Revisado y verificado.
-- [ ] Rol 2 (EDA + transformaciones de predictores, **a cargo de Diego**) · Rol 3 (dos OLS anidados,
-  diagnóstico, validación) · Rol 4 (integración del avance). Avance: lun 16 nov.
-- **Avance del Rol 2** (`src/eda.py`, una función por paso; `python src/eda.py` rehace todo):
-  - [x] Paso 1 distribución de la LGD · [x] Paso 2 descriptivos y dispersión · [x] Paso 3 LGD por factor ·
-    [x] Paso 4 correlaciones y atípicos (entrenamiento).
-  - [ ] Paso 5 transformaciones de predictores (log / Box-Cox; candidato: monto original; `mi_pct` tiene
-    66 % de ceros, no admite log) · [ ] Paso 6 LGD de los 81 sin DTI vs. el resto (`lgd_2007.csv`) ·
-    [ ] Figura 1 final (varios paneles, coma decimal) · [ ] juntar los párrafos en uno corto para `main.tex`.
-  - Método de trabajo: Claude programa y explica conceptos; Diego responde un cuestionario por paso con su
-    interpretación; Claude avisa si una respuesta no calza con los datos y redacta el párrafo con sus
-    respuestas. Párrafos y registro de IA en `informe/reportes_roles/rol2_eda.md`.
-- Informe en Overleaf: `informe/avance/main.tex`. La introducción, los datos y la frecuencia y periodo
-  quedaron como borrador para el Rol 4 (falta la motivación).
+- [x] Rol 2 (EDA, Diego pasos 1–4 y Amelie pasos 5–6): `src/eda.py` (pasos 1–6 y Figura 1). Párrafos en
+  `informe/reportes_roles/rol2_eda.md`.
+- [x] Rol 3 (modelos, Amelie): `src/seleccion_modelos.py` (16.384 subconjuntos) y `src/modelos.py` (Tabla 2,
+  diagnóstico, validación, Figura 2, tablas `mod_01` a `mod_11`). Reporte en `informe/reportes_roles/rol3_modelos.md`.
+  Revisado el 15-11: todo se reproduce.
+- [ ] **Rol 4 (Enzo): integración del avance en `informe/avance/main.tex`** — entrega lun 16 nov.
+  - Secciones listas para pegar: `seccion2_rol1.tex` (párrafo de limpieza, **borrador por revisar por
+    Joaquín**), `seccion3_rol2.tex` (Figura 1 + párrafo, **por aprobar por Diego y Amelie**),
+    `seccion4_rol3.tex` (Tabla 2, Figura 2 y párrafo).
+  - Falta: motivación, conclusiones y ajustar a **2 páginas**. Prueba del 15-11: integrado todo y con textos
+    de largo realista sale en 3 páginas, porque la Figura 1 no cabe al final de la página 1 y deja un
+    hueco; hay que subirla, achicarla o acortar texto.
+- [ ] Grupo: confirmar las decisiones del 13-11 y las H–L (el acta dice "pendiente de confirmar").
+- [ ] Joaquín: revisar la sección "Uso de IA" de `rol1_datos.md` contra el enunciado.
+- Método de trabajo con IA: Claude programa y explica conceptos; la persona del rol interpreta (cuestionario
+  o preguntas guía); Claude avisa si algo no calza con los datos y redacta con sus respuestas.
 - Los CSV versionados salieron de la entrega de Freddie Mac a 202606 con corte 202603. El crudo local
   de este PC es la entrega a 202603: si se vuelve a correr `build_dataset.py` aquí, cambian 5 valores de LGD.
 
@@ -68,3 +71,6 @@ los apuntes y scripts de ejemplo del curso (en R) están fuera del repo, en
 - Faltantes: casos completos (−83), con comparación de la LGD de los 81 sin DTI como limitación.
 - Ratificado lo del Rol 1: divisiones censales sin PR, agrupaciones de factores, corte ≤ 2014-12,
   variables descartadas (D6) y la lista `CANDIDATE_PREDICTORS`.
+- G: se mantienen las 21 LGD atípicas. H: log(monto). I: resto en escala original. J: seguro = indicadora
+  + `mi_pct`. K: LTV (no CLTV). L: completo (14 bloques) vs. reducido (sin DTI ni primer comprador); se
+  prefiere el reducido.

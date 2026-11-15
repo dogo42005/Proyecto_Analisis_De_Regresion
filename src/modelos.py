@@ -11,6 +11,13 @@ Salidas:
   outputs/tables/mod_02_coeficientes.csv    coeficientes del reducido (estimación, EE, t, p)
   outputs/tables/mod_03_vif.csv             VIF / GVIF por bloque del reducido
   outputs/tables/mod_04_influyentes.csv     créditos con mayor distancia de Cook
+  outputs/tables/mod_05_resumen_influencia.csv  umbrales y conteos de apalancamiento, Cook y residuos
+  outputs/tables/mod_06_sensibilidad_atipicos.csv  coeficientes con y sin las 21 LGD atípicas
+  outputs/tables/mod_07_pruebas_supuestos.csv  Breusch-Pagan, Jarque-Bera, asimetría y curtosis
+  outputs/tables/mod_08_errores.csv         RMSE/MAE en entrenamiento, validación y modelo nulo
+  outputs/tables/mod_09_error_por_anio.csv  error medio por año de liquidación (ambos tramos)
+  outputs/tables/mod_10_errores_robustos_hc3.csv  p-valores clásicos vs. robustos (HC3)
+  outputs/tables/mod_11_varianza_residuos.csv  desv. est. de los residuos por quintil de ajustado
   outputs/figures/figura2.(png|pdf)         paneles de diagnóstico (+ copia en informe/avance/figuras)
 """
 from pathlib import Path
@@ -165,6 +172,51 @@ def main():
                "jarque_bera_p": jb.pvalue, "asimetria_resid": stats.skew(m_r.resid),
                "curtosis_exceso_resid": stats.kurtosis(m_r.resid)}).round(5).to_csv(
         TAB_DIR / "mod_07_pruebas_supuestos.csv", header=["valor"])
+
+    # --- Errores del reducido: entrenamiento, validación y modelo nulo --------
+    # Error = observado − predicho (positivo = el modelo subestima la LGD).
+    # Modelo nulo: predecir siempre la LGD promedio de entrenamiento.
+    e_tr = train["lgd"] - m_r.fittedvalues
+    e_va = valid["lgd"] - m_r.predict(valid)
+    e_nulo = valid["lgd"] - train["lgd"].mean()
+
+    def resumen_error(e):
+        return {"n": len(e), "rmse": np.sqrt((e ** 2).mean()), "mae": e.abs().mean(),
+                "error_medio": e.mean()}
+
+    err = pd.DataFrame({"entrenamiento": resumen_error(e_tr), "validacion": resumen_error(e_va),
+                        "nulo_en_validacion": resumen_error(e_nulo)}).T
+    # R² fuera de muestra: 1 − MSE del modelo / MSE del modelo nulo, en validación
+    err["r2_fuera_de_muestra"] = np.nan
+    err.loc["validacion", "r2_fuera_de_muestra"] = 1 - (e_va ** 2).mean() / (e_nulo ** 2).mean()
+    err.round(4).to_csv(TAB_DIR / "mod_08_errores.csv")
+    print("\nErrores (reducido):\n", err.round(4).to_string())
+
+    # Error medio por año de liquidación, en ambos tramos
+    por_anio = []
+    for tramo, d, e in [("entrenamiento", train, e_tr), ("validacion", valid, e_va)]:
+        t = (pd.DataFrame({"anio": d["fecha_liq"].dt.year, "e": e}).groupby("anio")["e"]
+             .agg(n="size", error_medio="mean", rmse=lambda x: np.sqrt((x ** 2).mean()))
+             .reset_index())
+        t.insert(0, "tramo", tramo)
+        por_anio.append(t)
+    pd.concat(por_anio).round(4).to_csv(TAB_DIR / "mod_09_error_por_anio.csv", index=False)
+
+    # Errores estándar robustos (HC3): ¿algún coeficiente cambia de significancia al 5 %?
+    m_hc3 = smf.ols(formula(reducido_b), data=train).fit(cov_type="HC3")
+    hc3 = pd.DataFrame({"estimacion": m_r.params, "ee_clasico": m_r.bse, "p_clasico": m_r.pvalues,
+                        "ee_hc3": m_hc3.bse, "p_hc3": m_hc3.pvalues})
+    hc3["cambia_significancia_5pct"] = (hc3["p_clasico"] < 0.05) != (hc3["p_hc3"] < 0.05)
+    hc3.round(5).to_csv(TAB_DIR / "mod_10_errores_robustos_hc3.csv")
+    print("Coeficientes que cambian de significancia con HC3:",
+          int(hc3["cambia_significancia_5pct"].sum()))
+
+    # Varianza de los residuos según el valor ajustado (apoyo a Breusch-Pagan)
+    quintil = pd.qcut(m_r.fittedvalues, 5, labels=[1, 2, 3, 4, 5])
+    var_res = (pd.DataFrame({"quintil_ajustado": quintil, "residuo": m_r.resid})
+               .groupby("quintil_ajustado", observed=True)["residuo"]
+               .agg(n="size", desv_est="std").reset_index())
+    var_res.round(4).to_csv(TAB_DIR / "mod_11_varianza_residuos.csv", index=False)
 
     # --- Figura 2: diagnóstico del reducido ------------------------------------
     fig, axes = plt.subplots(1, 4, figsize=(11, 2.9))

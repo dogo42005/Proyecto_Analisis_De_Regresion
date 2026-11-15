@@ -4,7 +4,8 @@ Responsable: **Amelie Ramírez** · Hito 2 (avance, lunes 16-11-2026).
 Datos: `data/processed/lgd_2007_model.csv`; ajuste solo con entrenamiento (`split == "train"`, n = 3.153);
 validación con `split == "valid"` (n = 803). Respuesta: `lgd` original (decisión A).
 
-Scripts: `src/seleccion_modelos.py` (búsqueda de subconjuntos y aporte por variable).
+Scripts: `src/seleccion_modelos.py` (búsqueda de subconjuntos y aporte por variable) y `src/modelos.py` (ajuste de
+los dos modelos, Tabla 2, diagnóstico, validación y Figura 2; tablas `outputs/tables/mod_*.csv`).
 Decisiones: K y L en `informe/decisiones.md`.
 
 ## Paso 1 — Predictores del modelo completo
@@ -45,7 +46,9 @@ AIC y BIC: completo −59,09 y 104,43; reducido −58,80 y 92,61 (`outputs/table
 
 ## Paso 3 — Diagnóstico (modelo reducido)
 
-Fuentes: `outputs/figures/figura2.png` (paneles a–c), `outputs/tables/mod_03_vif.csv`, `outputs/tables/mod_07_pruebas_supuestos.csv`.
+Fuentes: `outputs/figures/figura2.png` (paneles a–c), `outputs/tables/mod_03_vif.csv`, `outputs/tables/mod_07_pruebas_supuestos.csv`,
+`mod_09_error_por_anio.csv` (residuo medio por año), `mod_10_errores_robustos_hc3.csv` (HC3) y
+`mod_11_varianza_residuos.csv` (desv. est. de los residuos por quintil de ajustado).
 Interpretación: Amelie.
 
 > El diagnóstico del modelo reducido no muestra problemas de linealidad global: la tendencia de los residuos frente a
@@ -74,16 +77,18 @@ Fuentes: `outputs/figures/figura2.png` (panel d), `outputs/tables/mod_04_influye
 > tienen residuos estudentizados mayores que 3 en valor absoluto. La mayoría de los 21 créditos con LGD atípica tiene
 > residuos altos pero bajo apalancamiento (18 de 21 bajo el umbral), por lo que su capacidad de modificar el ajuste es
 > limitada, aunque los tres créditos con mayor distancia de Cook pertenecen a este grupo. Al reajustar el modelo sin
-> ellos, los coeficientes cambian poco y ninguno cambia de signo; el mayor cambio en un coeficiente relevante es el de
-> la indicadora de seguro (de 0,032 a 0,035). Por lo tanto, se mantienen: son pérdidas reales y aportan información
-> sobre los casos extremos.
+> ellos, los coeficientes cambian poco; solo cambia de signo el de condominio, que es prácticamente cero y no
+> significativo (de −0,002 a 0,005; p = 0,88). El mayor cambio en un coeficiente relevante es el de la indicadora de
+> seguro (de 0,032 a 0,035). Por lo tanto, se mantienen: son pérdidas reales y aportan información sobre los casos
+> extremos.
 
 Nota de concepto: el apalancamiento indica si un crédito *podría* mover el ajuste (predictores poco comunes); la
 distancia de Cook indica si *efectivamente* lo mueve.
 
 ## Paso 5 — Validación
 
-Fuentes: `outputs/tables/mod_01_comparacion.csv`; error por año calculado con `src/modelos.py` (modelo reducido).
+Fuentes: `outputs/tables/mod_01_comparacion.csv`, `mod_08_errores.csv` (entrenamiento, validación, modelo nulo y
+R² fuera de muestra) y `mod_09_error_por_anio.csv` (error por año), todas de `src/modelos.py` (modelo reducido).
 Interpretación: Amelie.
 
 > En validación (n = 803), el modelo reducido tiene un error mayor que en entrenamiento (RMSE 0,359 frente a 0,238;
@@ -115,3 +120,4 @@ Archivo listo para pegar: `informe/avance/seccion4_rol3.tex` (Tabla 2, Figura 2 
 | Claude Code | Redacción | Párrafo del paso 4. La IA explicó residuo estudentizado, apalancamiento y Cook, calculó la sensibilidad sin los 21 atípicos y avisó lo que no calzaba (se confundía alto apalancamiento con influencia; hay 16 casos con \|r\| > 3, no 7; 3 atípicos superan el umbral de h y el máximo es 0,025). Amelie escribió y aprobó la interpretación; la decisión de mantener los atípicos (G) se ratifica | Cifras contrastadas con `mod_04` a `mod_06` |
 | Claude Code | Redacción | Párrafo del paso 5. La IA explicó RMSE, MAE, modelo nulo, R² fuera de muestra y sesgo, calculó el error por año y avisó lo que no calzaba ("no predice bien" era demasiado duro porque supera al promedio; entrenamiento y validación tienen la misma limpieza, no distintos filtros; signo del sesgo: positivo = subestima; el sesgo cercano a 0 en algunos años no implica error bajo). Amelie escribió y aprobó la interpretación | Cifras contrastadas con `mod_01_comparacion.csv` |
 | Claude Code | Redacción | Párrafo de la sección 4 de `main.tex`: la IA condensó los párrafos de los pasos 1 a 5 ya escritos y aprobados por Amelie, sin agregar interpretación nueva; también propuso el pie de la Figura 2 (descriptivo) y armó la Tabla 2 en LaTeX | Cifras contrastadas con `mod_01_comparacion.csv` y los párrafos de los pasos 1 a 5 |
+| Claude Code | Revisión y programación (15-11, sesión de Diego) | Revisión del commit: se volvieron a correr los scripts (21 tablas idénticas) y se recalcularon las cifras del reporte. Se agregaron a `src/modelos.py` las tablas `mod_08` a `mod_11` (errores y modelo nulo, error por año, HC3, varianza por quintil), que antes se calculaban fuera del script. Se corrigió en el paso 4 la frase "ninguno cambia de signo" (el de condominio sí cambia, aunque es ≈ 0 y no significativo) | Las tablas nuevas reproducen exactamente las cifras ya escritas |

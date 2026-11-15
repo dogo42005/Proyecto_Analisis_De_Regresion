@@ -39,17 +39,19 @@
 
 ## 3. Decisiones aplicadas
 
-| # | Tema | Opción aplicada | Tipo | 
-|---|---|---|---|
-| — | Versión de datos | Entrega nueva con corte de desempeño 202603 | Criterio técnico del rol (reproducibilidad) | 
-| — | Regla CLTV < LTV | Implementada en el código (0 casos) | Criterio técnico (alinear código y log) |
-| D7 | Meses previos al corte | Excluir liquidaciones 2026-01 a 2026-03 (0 casos) | Decisión de grupo |
-| D5 | Faltantes `dti` / `credit_score` | Casos completos (−83) | Decisión de grupo |
-| D6 | Variables sin información | Descartar `vantage_score_4`, `property_valuation_method`, `amortization_type`, `eltv` | Decisión de grupo |
-| D4 | Corte 80/20 | Entrenamiento ≤ 2014-12; validación ≥ 2015-01 | Decisión de grupo |
-| D3 | Estados | 9 divisiones censales; excluir PR (−4) | Decisión de grupo | 
-| D3 | Factores escasos | `channel` R/TPO; CP → CO; `n_units` 1 / 2-4 | Decisión de grupo | Por ratificar (Reunión 2) |
-| D1 | LGD fuera de [0, 1] | Mantener `lgd` y crear `lgd_trunc` | Criterio tecnico del rol
+| # | Tema | Opción aplicada | Tipo | Estado |
+|---|---|---|---|---|
+| — | Versión de datos | Entrega nueva con corte de desempeño 202603 | Criterio técnico del rol (reproducibilidad) | Aplicada |
+| — | Regla CLTV < LTV | Implementada en el código (0 casos) | Criterio técnico (alinear código y log) | Aplicada |
+| D7 | Meses previos al corte | Excluir liquidaciones 2026-01 a 2026-03 (0 casos) | Decisión de grupo | Ratificada 13-11 |
+| D5 | Faltantes `dti` / `credit_score` | Casos completos (−83) | Decisión de grupo | Ratificada 13-11 (decisión E) |
+| D6 | Variables sin información | Descartar `vantage_score_4`, `property_valuation_method`, `amortization_type`, `eltv` | Decisión de grupo | Ratificada 13-11 |
+| D4 | Corte 80/20 | Entrenamiento ≤ 2014-12; validación ≥ 2015-01 | Decisión de grupo | Ratificada 13-11 |
+| D3 | Estados | 9 divisiones censales; excluir PR (−4) | Decisión de grupo | Ratificada 13-11 |
+| D3 | Factores escasos | `channel` R/TPO; CP → CO; `n_units` 1 / 2-4 | Decisión de grupo | Ratificada 13-11 |
+| D1 | LGD fuera de [0, 1] | Mantener `lgd` y crear `lgd_trunc` | Decisión de grupo | Ratificada 13-11 (decisión A: el modelo usa `lgd`; `lgd_trunc` no se usa en el Hito 2) |
+
+Detalle de la ratificación: `informe/decisiones.md`.
 
 ---
 
@@ -124,8 +126,8 @@ python src/prepare_model_data.py   # segundos
 
 | Elemento | Sección del informe |
 |---|---|
-| Tabla de flujo muestral (≈ 7 filas, desde `flujo_muestral.csv`) | Datos y limpieza | 
-| Párrafo de datos y limpieza (5–7 líneas) | Datos y limpieza | 
+| Tabla de flujo muestral (≈ 7 filas, desde `flujo_muestral.csv`) | Datos y limpieza (Tabla 1, ya en `main.tex`) |
+| Párrafo de datos y limpieza (5–7 líneas) | Datos y limpieza. **Borrador** en `informe/avance/seccion2_rol1.tex` (15-11, armado con Claude Code a partir de `cleaning_log.md`); **pendiente de revisión de Joaquín** |
 
 Elementos que conviene mencionar en el párrafo (datos, no redacción):
 
