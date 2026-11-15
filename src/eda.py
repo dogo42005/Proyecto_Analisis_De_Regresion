@@ -14,6 +14,8 @@ Pasos implementados:
   3. LGD por nivel de cada factor (boxplots por tramo).
   4. Correlaciones entre la LGD y los predictores numéricos, y datos atípicos
      (solo entrenamiento).
+  5. Transformaciones (log y Box-Cox) de los predictores positivos (entrenamiento).
+  6. LGD de los créditos sin DTI vs. el resto (base con LGD, 4.043 créditos).
 
 Decisiones del grupo que aplica (informe/decisiones.md, 13-11-2026):
   - Se describe toda la base, separando entrenamiento y validación (columna 'split').
@@ -474,6 +476,290 @@ def paso4_correlaciones_y_atipicos(df):
     print("  tabla: outputs/tables/eda_04_lgd_extremos.csv")
 
 
+# ---------------------------------------------------------------------------
+# Paso 5: transformaciones de los predictores numéricos (solo entrenamiento)
+# ---------------------------------------------------------------------------
+def paso5_transformaciones(df):
+    """Evalúa log y Box-Cox en los predictores numéricos estrictamente positivos.
+
+    Todo se calcula SOLO con entrenamiento (decisión D). Para cada predictor:
+      - Regla del logaritmo: razón máx/mín; si es mayor que ~10, el log suele
+        ayudar (la variable abarca varios órdenes de magnitud).
+      - Asimetría antes y después de transformar (0 = simétrica).
+      - Lambda de Box-Cox (máxima verosimilitud) con su IC 95 %: lambda cerca
+        de 1 = no transformar, cerca de 0 = log, cerca de 0,5 = raíz.
+      - Correlación de Pearson con la LGD en cada escala.
+    mi_pct se excluye porque tiene ceros (log(0) no existe).
+    El gráfico detalla el monto original, candidato principal.
+    """
+    from scipy import stats
+    from statsmodels.nonparametric.smoothers_lowess import lowess
+
+    print("\nPaso 5: transformaciones de predictores (entrenamiento)")
+    train = df[df["split"] == "train"]
+
+    # --- Tabla: resumen por predictor positivo -----------------------------
+    filas = []
+    for c, nombre in NUM_PREDICTORS.items():
+        x = train[c]
+        if (x <= 0).any():
+            print(f"  {c}: tiene valores <= 0, no admite log ni Box-Cox directo")
+            continue
+        xbc, lam, ic = stats.boxcox(x, alpha=0.05)  # lambda MLE e IC 95 %
+        filas.append({
+            "variable": c, "min": x.min(), "max": x.max(), "razon_max_min": x.max() / x.min(),
+            "asim_original": x.skew(), "asim_log": np.log(x).skew(), "asim_boxcox": pd.Series(xbc).skew(),
+            "lambda_boxcox": lam, "ic95_inf": ic[0], "ic95_sup": ic[1],
+            "r_lgd_original": np.corrcoef(x, train["lgd"])[0, 1],
+            "r_lgd_log": np.corrcoef(np.log(x), train["lgd"])[0, 1],
+            "r_lgd_boxcox": np.corrcoef(xbc, train["lgd"])[0, 1],
+        })
+    tab = pd.DataFrame(filas).round(3)
+    tab.to_csv(TAB_DIR / "eda_05_transformaciones.csv", index=False)
+    print(tab.to_string(index=False))
+    print("  tabla: outputs/tables/eda_05_transformaciones.csv")
+
+    # --- Gráfico: monto original en tres escalas ---------------------------
+    x = train["orig_upb"]
+    y = train["lgd"]
+    xbc, lam, ic = stats.boxcox(x, alpha=0.05)
+    escalas = [("Original", x, "Monto original (miles de USD)"),
+               ("Logaritmo", np.log(x), "log(monto original)"),
+               ("Box-Cox (λ = " + f"{lam:.2f}".replace(".", ",") + ")", xbc, "Monto transformado (Box-Cox)")]
+    corto = ["original", "log", "Box-Cox"]  # nombres cortos para los títulos de la fila 2
+
+    fig, axes = plt.subplots(2, 3, figsize=(10, 5.6))
+    # Fila 1: distribución del predictor en cada escala
+    for ax, (tit, v, lab) in zip(axes[0], escalas):
+        ax.hist(v, bins=40, color=COLORS["train"], edgecolor="white", linewidth=0.4)
+        asim = f"{pd.Series(v).skew():.2f}".replace(".", ",")
+        ax.set_title(f"{tit} · asimetría {asim}", loc="left")
+        ax.set_xlabel(lab)
+        coma_decimal(ax)
+    axes[0, 0].set_ylabel("Créditos")
+    # Fila 2: LGD vs. el predictor en cada escala, con tendencia LOWESS
+    for ax, (tit, v, lab), nom in zip(axes[1], escalas, corto):
+        ax.scatter(v, y, s=4, color=COLORS["train"], alpha=0.25, linewidths=0, rasterized=True)
+        suav = lowess(y, v, frac=0.3)
+        ax.plot(suav[:, 0], suav[:, 1], color=INK, linewidth=2)
+        for ref in (0, 1):
+            ax.axhline(ref, color=INK_2, linestyle="--", linewidth=0.7)
+        r = np.corrcoef(v, y)[0, 1]
+        ax.set_title(f"LGD vs. {nom} · r = " + f"{r:.2f}".replace(".", ","), loc="left")
+        ax.set_xlabel(lab)
+        ax.grid(axis="x", visible=False)
+        coma_decimal(ax)
+    axes[1, 0].set_ylabel("LGD")
+    n_txt = f"{len(x):,}".replace(",", ".")
+    fig.suptitle(f"Monto original: escalas evaluadas (solo entrenamiento, n = {n_txt})",
+                 x=0.01, ha="left", fontweight="bold")
+    fig.tight_layout()
+    save(fig, "eda_05_transformaciones_monto")
+
+    # --- Gráfico: perfil de Box-Cox del monto (dónde está el mejor lambda) -
+    grilla = np.linspace(-1, 1.5, 251)
+    llf = [stats.boxcox_llf(l, x) for l in grilla]
+    fig, ax = plt.subplots(figsize=(5, 3.2))
+    ax.plot(grilla, llf, color=COLORS["train"], linewidth=2)
+    ax.axvspan(ic[0], ic[1], color=COLORS["train"], alpha=0.15, label="IC 95 % de λ")
+    ax.axvline(lam, color=INK, linewidth=1, label=f"λ estimado = {lam:.2f}".replace(".", ","))
+    for ref, txt in [(0, "log (λ = 0)"), (1, "sin transformar (λ = 1)")]:
+        ax.axvline(ref, color=INK_2, linestyle="--", linewidth=0.8)
+        ax.text(ref, ax.get_ylim()[0], " " + txt, rotation=90, va="bottom", ha="right", color=INK_2, fontsize=8)
+    ax.set_xlabel("λ")
+    ax.set_ylabel("Log-verosimilitud")
+    ax.set_title("Perfil de Box-Cox del monto original", loc="left")
+    ax.legend(frameon=False, loc="lower center")
+    coma_decimal(ax, "x")
+    fig.tight_layout()
+    save(fig, "eda_05_boxcox_perfil_monto")
+
+    # --- Gráfico: LTV y CLTV en escala original vs. Box-Cox ----------------
+    # Ambos tienen lambda > 1 y la r con la LGD sube algo con Box-Cox; se mira
+    # si la tendencia LOWESS realmente se endereza
+    fig, axes = plt.subplots(2, 2, figsize=(8, 5.6), sharey=True)
+    for fila, c in zip(axes, ["ltv", "cltv"]):
+        x = train[c]
+        xbc, lam, _ = stats.boxcox(x, alpha=0.05)
+        lam_txt = f"{lam:.2f}".replace(".", ",")
+        for ax, (tit, v, lab) in zip(fila, [("original", x, NUM_PREDICTORS[c]),
+                                             (f"Box-Cox (λ = {lam_txt})", xbc, f"{c.upper()} transformado")]):
+            ax.scatter(v, y, s=4, color=COLORS["train"], alpha=0.25, linewidths=0, rasterized=True)
+            suav = lowess(y, v, frac=0.3)
+            ax.plot(suav[:, 0], suav[:, 1], color=INK, linewidth=2)
+            for ref in (0, 1):
+                ax.axhline(ref, color=INK_2, linestyle="--", linewidth=0.7)
+            r_txt = f"{np.corrcoef(v, y)[0, 1]:.2f}".replace(".", ",")
+            ax.set_title(f"{c.upper()} {tit} · r = {r_txt}", loc="left")
+            ax.set_xlabel(lab)
+            ax.grid(axis="x", visible=False)
+            coma_decimal(ax)
+        fila[0].set_ylabel("LGD")
+    fig.tight_layout()
+    save(fig, "eda_05_transformaciones_ltv_cltv")
+
+
+# ---------------------------------------------------------------------------
+# Paso 6: LGD de los créditos sin DTI vs. el resto (base con LGD, 4.043)
+# ---------------------------------------------------------------------------
+IN_LGD = ROOT / "data" / "processed" / "lgd_2007.csv"
+
+
+def paso6_lgd_sin_dti(df_model=None):
+    """Compara la LGD de los 81 créditos sin DTI (excluidos por casos completos)
+    con la del resto, en la base con LGD (lgd_2007.csv, 4.043 créditos).
+
+    Según la guía, DTI = 999 significa DTI > 65 % o no disponible, así que los
+    excluidos podrían ser deudores más endeudados. Si su LGD es distinta, la
+    exclusión puede sesgar el modelo (limitación a reportar).
+    Se separa por tramo con la misma regla de la partición (liquidación <= 2014-12).
+    Pruebas: t de Welch (medias, varianzas distintas) y Mann-Whitney (distribuciones,
+    sin suponer normalidad). Solo describen; la lectura es del grupo.
+    """
+    from scipy import stats
+
+    print("\nPaso 6: LGD de los créditos sin DTI vs. el resto")
+    a = pd.read_csv(IN_LGD, dtype=str)
+    for c in ["lgd", "dti", "zero_balance_effective_date"]:
+        a[c] = pd.to_numeric(a[c])
+    a["grupo"] = np.where(a["dti"].isna(), "Sin DTI", "Con DTI")
+    a["split"] = np.where(a["zero_balance_effective_date"] <= 201412, "train", "valid")
+
+    # --- Tabla: resumen por grupo (total y por tramo) ----------------------
+    filas = []
+    for tramo in ["total", "train", "valid"]:
+        d = a if tramo == "total" else a[a["split"] == tramo]
+        g1, g0 = d.loc[d["grupo"] == "Sin DTI", "lgd"], d.loc[d["grupo"] == "Con DTI", "lgd"]
+        for nombre, x in [("Sin DTI", g1), ("Con DTI", g0)]:
+            filas.append({
+                "tramo": tramo, "grupo": nombre, "n": len(x), "media": x.mean(), "mediana": x.median(),
+                "desv_est": x.std(), "q25": x.quantile(0.25), "q75": x.quantile(0.75),
+                "pct_lgd_neg": 100 * (x < 0).mean(), "pct_lgd_mayor_1": 100 * (x > 1).mean(),
+                "p_welch": stats.ttest_ind(g1, g0, equal_var=False).pvalue if nombre == "Sin DTI" else np.nan,
+                "p_mann_whitney": stats.mannwhitneyu(g1, g0).pvalue if nombre == "Sin DTI" else np.nan,
+            })
+    tab = pd.DataFrame(filas).round(3)
+    tab.to_csv(TAB_DIR / "eda_06_lgd_sin_dti.csv", index=False)
+    print(tab.to_string(index=False))
+    print("  tabla: outputs/tables/eda_06_lgd_sin_dti.csv")
+
+    # --- Gráfico: boxplots + puntos, por grupo y tramo ----------------------
+    fig, axes = plt.subplots(1, 2, figsize=(7.5, 3.4), sharey=True)
+    rng = np.random.default_rng(0)  # semilla fija para el jitter
+    for ax, s in zip(axes, ["train", "valid"]):
+        d = a[a["split"] == s]
+        datos = [d.loc[d["grupo"] == g, "lgd"] for g in ["Con DTI", "Sin DTI"]]
+        ax.boxplot(datos, widths=0.5, showfliers=False,
+                   medianprops={"color": INK, "linewidth": 1.5},
+                   boxprops={"color": INK_2}, whiskerprops={"color": INK_2}, capprops={"color": INK_2})
+        # Puntos con jitter horizontal (todos los sin DTI; muestra de los con DTI)
+        for i, x in enumerate(datos, start=1):
+            if len(x) > 300:
+                x = x.sample(300, random_state=0)
+            ax.scatter(i + rng.uniform(-0.15, 0.15, len(x)), x, s=6, color=COLORS[s],
+                       alpha=0.35 if i == 1 else 0.8, linewidths=0)
+        ax.set_xticks([1, 2], [f"Con DTI\n(n = {len(datos[0]):,})".replace(",", "."),
+                               f"Sin DTI\n(n = {len(datos[1])})"])
+        for ref in (0, 1):
+            ax.axhline(ref, color=INK_2, linestyle="--", linewidth=0.7)
+        ax.set_title("Entrenamiento" if s == "train" else "Validación", loc="left", color=COLORS[s])
+        coma_decimal(ax, "y")
+    axes[0].set_ylabel("LGD")
+    fig.tight_layout()
+    save(fig, "eda_06_lgd_sin_dti")
+
+
+# ---------------------------------------------------------------------------
+# Figura 1 del avance: un panel por hallazgo clave (una sola fila)
+# ---------------------------------------------------------------------------
+def figura1(df):
+    """Figura 1 del informe de avance (sección 3 de main.tex).
+
+    (a) Distribución de la LGD por tramo (Paso 1)
+    (b) LGD vs. monto original en escala log, con LOWESS (Paso 5, decisión H)
+    (c) LGD vs. LTV, con LOWESS: relación no monótona (Paso 5, decisión I)
+    (d) LGD con y sin DTI, por tramo (Paso 6)
+    Se guarda en outputs/figures/ y en informe/avance/figuras/figura1.pdf.
+    """
+    from statsmodels.nonparametric.smoothers_lowess import lowess
+
+    print("\nFigura 1 del avance")
+    train = df[df["split"] == "train"]
+    fig, axes = plt.subplots(1, 4, figsize=(11, 2.9))
+
+    # (a) Histogramas normalizados de la LGD por tramo
+    ax = axes[0]
+    bins = np.linspace(-1.1, 2.5, 37)
+    for s, nom in [("train", "Entrenamiento"), ("valid", "Validación")]:
+        ax.hist(df.loc[df["split"] == s, "lgd"], bins=bins, density=True, histtype="step",
+                linewidth=1.6, color=COLORS[s], label=nom)
+    for ref in (0, 1):
+        ax.axvline(ref, color=INK_2, linestyle="--", linewidth=0.7)
+    ax.set_xlabel("LGD")
+    ax.set_ylabel("Densidad")
+    ax.legend(frameon=False, fontsize=7.5, loc="upper right", bbox_to_anchor=(1.04, 1.02), handlelength=1.2)
+    ax.set_title("(a) Distribución de la LGD", loc="left")
+    coma_decimal(ax)
+
+    # (b) y (c) Dispersión en entrenamiento con tendencia LOWESS
+    for ax, (x, lab, tit) in zip(axes[1:3], [
+            (train["orig_upb"], "Monto original (miles USD, escala log)", "(b) LGD vs. monto"),
+            (train["ltv"], "LTV (%)", "(c) LGD vs. LTV")]):
+        y = train["lgd"]
+        ax.scatter(x, y, s=3, color=COLORS["train"], alpha=0.2, linewidths=0, rasterized=True)
+        xs = np.log(x) if "log" in lab else x
+        suav = lowess(y, xs, frac=0.3)
+        ax.plot(np.exp(suav[:, 0]) if "log" in lab else suav[:, 0], suav[:, 1], color=INK, linewidth=2)
+        for ref in (0, 1):
+            ax.axhline(ref, color=INK_2, linestyle="--", linewidth=0.7)
+        if "log" in lab:
+            ax.set_xscale("log")
+            ax.set_xticks([25, 50, 100, 200, 400])
+            ax.xaxis.set_minor_locator(matplotlib.ticker.NullLocator())
+        ax.set_xlabel(lab)
+        ax.set_title(tit, loc="left")
+        ax.grid(axis="x", visible=False)
+        coma_decimal(ax)
+    axes[1].set_ylabel("LGD")
+
+    # (d) Boxplots de la LGD con y sin DTI, por tramo (base con LGD)
+    ax = axes[3]
+    a = pd.read_csv(IN_LGD, dtype=str)
+    for c in ["lgd", "dti", "zero_balance_effective_date"]:
+        a[c] = pd.to_numeric(a[c])
+    a["split"] = np.where(a["zero_balance_effective_date"] <= 201412, "train", "valid")
+    pos, datos, cols, etiq = [], [], [], []
+    for k, (s, g) in enumerate([("train", False), ("train", True), ("valid", False), ("valid", True)]):
+        x = a.loc[(a["split"] == s) & (a["dti"].isna() == g), "lgd"]
+        pos.append(k + 1 + (0.4 if s == "valid" else 0))
+        datos.append(x)
+        cols.append(COLORS[s])
+        etiq.append(f"{'Sin' if g else 'Con'}\n({len(x):,})".replace(",", "."))
+    bp = ax.boxplot(datos, positions=pos, widths=0.6, showfliers=False, patch_artist=True,
+                    medianprops={"color": INK, "linewidth": 1.4},
+                    whiskerprops={"color": INK_2}, capprops={"color": INK_2})
+    for caja, c in zip(bp["boxes"], cols):
+        caja.set(facecolor=c, alpha=0.35, edgecolor=c)
+    for ref in (0, 1):
+        ax.axhline(ref, color=INK_2, linestyle="--", linewidth=0.7)
+    ax.set_xticks(pos, etiq, fontsize=8)
+    ax.set_xlabel("DTI (n)")
+    # Rótulo del tramo sobre cada par de cajas, en su color
+    for xm, s, nom in [(1.5, "train", "Entrenamiento"), (3.9, "valid", "Validación")]:
+        ax.text(xm, 1.02, nom, color=COLORS[s], ha="center", va="bottom", fontsize=8,
+                transform=ax.get_xaxis_transform())
+    ax.set_title("(d) LGD con y sin DTI", loc="left", pad=14)
+    coma_decimal(ax, "y")
+
+    fig.tight_layout(w_pad=1.2)
+    save(fig, "figura1")
+    dest = ROOT / "informe" / "avance" / "figuras"
+    dest.mkdir(parents=True, exist_ok=True)
+    fig.savefig(dest / "figura1.pdf", bbox_inches="tight")
+    plt.close(fig)
+    print("  copia: informe/avance/figuras/figura1.pdf")
+
+
 def main():
     sys.stdout.reconfigure(encoding="utf-8")
     df = load_model_data()
@@ -483,6 +769,9 @@ def main():
     paso2_descriptivos_y_dispersion(df)
     paso3_lgd_por_factor(df)
     paso4_correlaciones_y_atipicos(df)
+    paso5_transformaciones(df)
+    paso6_lgd_sin_dti()
+    figura1(df)
 
 
 if __name__ == "__main__":

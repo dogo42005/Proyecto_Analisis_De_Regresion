@@ -1,0 +1,3 @@
+modelo,parametros,r2,r2_ajustado,aic,bic,F_global,p_F_global,rmse_valid,mae_valid,F_reducido_vs_completo,p_F_reducido_vs_completo
+Completo,27,0.3766,0.3714,-59.0889,104.4261,72.6318,0.0,0.3586,0.278,,
+Reducido,25,0.3757,0.371,-58.7961,92.6066,78.4503,0.0,0.3587,0.2778,2.1294,0.1191

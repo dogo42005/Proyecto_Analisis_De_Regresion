@@ -1,0 +1,7 @@
+,valor
+breusch_pagan_LM,164.31739
+breusch_pagan_p,0.0
+jarque_bera,142.93866
+jarque_bera_p,0.0
+asimetria_resid,0.04458
+curtosis_exceso_resid,1.03926

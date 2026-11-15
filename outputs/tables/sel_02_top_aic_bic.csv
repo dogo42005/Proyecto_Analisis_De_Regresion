@@ -1,0 +1,21 @@
+variables,n_var,p,r2_aj,aic,bic,rss,delta_aic,delta_bic,criterio
+log_monto + ltv + seguro + tasa + puntaje + dti + loan_purpose + occupancy_status + division + n_units_grp + n_borrowers + property_type_grp + channel_grp,13,26,0.3714,-60.0502,97.4087,178.1623,0.0,6.3369,AIC
+log_monto + ltv + seguro + tasa + puntaje + dti + loan_purpose + occupancy_status + division + n_units_grp + first_time_homebuyer + n_borrowers + property_type_grp + channel_grp,14,27,0.3714,-59.0889,104.4261,178.1036,0.9613,13.3543,AIC
+log_monto + ltv + seguro + tasa + puntaje + loan_purpose + occupancy_status + division + n_units_grp + n_borrowers + property_type_grp + channel_grp,12,25,0.371,-58.7961,92.6066,178.3463,1.254,1.5348,AIC
+log_monto + ltv + seguro + tasa + puntaje + loan_purpose + occupancy_status + division + n_units_grp + first_time_homebuyer + n_borrowers + property_type_grp + channel_grp,13,26,0.371,-57.9894,99.4694,178.2788,2.0608,8.3976,AIC
+log_monto + ltv + seguro + tasa + puntaje + dti + loan_purpose + occupancy_status + division + n_units_grp + n_borrowers + property_type_grp,12,25,0.3702,-55.0939,96.3089,178.5558,4.9563,5.2371,AIC
+log_monto + ltv + seguro + tasa + puntaje + loan_purpose + occupancy_status + division + n_units_grp + n_borrowers + property_type_grp,11,24,0.3699,-54.2748,91.0718,178.7155,5.7753,0.0,AIC
+log_monto + ltv + seguro + tasa + puntaje + dti + loan_purpose + occupancy_status + division + n_units_grp + first_time_homebuyer + n_borrowers + property_type_grp,13,26,0.3702,-54.0487,103.4101,178.5017,6.0015,12.3384,AIC
+log_monto + ltv + seguro + tasa + puntaje + loan_purpose + occupancy_status + division + n_units_grp + first_time_homebuyer + n_borrowers + property_type_grp,12,25,0.3699,-53.3702,98.0326,178.6534,6.68,6.9608,AIC
+log_monto + ltv + seguro + tasa + dti + loan_purpose + occupancy_status + division + n_units_grp + n_borrowers + property_type_grp + channel_grp,12,25,0.3685,-46.3813,105.0214,179.0499,13.6689,13.9496,AIC
+log_monto + ltv + seguro + tasa + loan_purpose + occupancy_status + division + n_units_grp + n_borrowers + property_type_grp + channel_grp,11,24,0.3682,-45.7992,99.5474,179.1966,14.251,8.4756,AIC
+log_monto + ltv + seguro + tasa + puntaje + loan_purpose + occupancy_status + division + n_units_grp + n_borrowers + property_type_grp,11,24,0.3699,-54.2748,91.0718,178.7155,5.7753,0.0,BIC
+log_monto + ltv + seguro + tasa + puntaje + loan_purpose + occupancy_status + division + n_units_grp + n_borrowers + property_type_grp + channel_grp,12,25,0.371,-58.7961,92.6066,178.3463,1.254,1.5348,BIC
+log_monto + ltv + seguro + tasa + puntaje + loan_purpose + division + n_units_grp + n_borrowers + property_type_grp,10,22,0.3664,-39.0311,94.2033,179.8096,21.019,3.1315,BIC
+log_monto + ltv + seguro + tasa + puntaje + loan_purpose + division + n_units_grp + n_borrowers + property_type_grp + channel_grp,11,23,0.3677,-44.6505,94.64,179.3756,15.3997,3.5682,BIC
+log_monto + ltv + seguro + tasa + puntaje + dti + loan_purpose + occupancy_status + division + n_units_grp + n_borrowers + property_type_grp,12,25,0.3702,-55.0939,96.3089,178.5558,4.9563,5.2371,BIC
+log_monto + ltv + seguro + tasa + loan_purpose + division + n_units_grp + n_borrowers + property_type_grp + channel_grp,10,22,0.3658,-35.9089,97.3255,179.9878,24.1413,6.2537,BIC
+log_monto + ltv + seguro + tasa + puntaje + dti + loan_purpose + occupancy_status + division + n_units_grp + n_borrowers + property_type_grp + channel_grp,13,26,0.3714,-60.0502,97.4087,178.1623,0.0,6.3369,BIC
+log_monto + ltv + seguro + tasa + puntaje + loan_purpose + occupancy_status + division + n_units_grp + first_time_homebuyer + n_borrowers + property_type_grp,12,25,0.3699,-53.3702,98.0326,178.6534,6.68,6.9608,BIC
+log_monto + ltv + seguro + tasa + loan_purpose + division + n_units_grp + n_borrowers + property_type_grp,9,21,0.364,-28.3085,98.8698,180.5366,31.7417,7.798,BIC
+log_monto + ltv + seguro + tasa + puntaje + loan_purpose + occupancy_status + division + n_units_grp + first_time_homebuyer + n_borrowers + property_type_grp + channel_grp,13,26,0.371,-57.9894,99.4694,178.2788,2.0608,8.3976,BIC

@@ -1,0 +1,18 @@
+% Tabla 2 (Rol 3) — cifras de outputs/tables/mod_01_comparacion.csv (src/modelos.py).
+% Reemplaza el bloque \begin{table}...\end{table} de la sección 4 de main.tex.
+\begin{table}[H]
+  \centering\small
+  \caption{Modelos OLS anidados ajustados con entrenamiento ($n = 3.153$); error de
+  validación contra la LGD original ($n = 803$). El reducido excluye el DTI y la
+  indicadora de primer comprador.}
+  \begin{tabular}{lcccccc}
+    \toprule
+    Modelo & Parámetros & $R^2$ ajustado & AIC & BIC & RMSE val. & MAE val. \\
+    \midrule
+    Completo & 27 & 0,371 & $-59{,}1$ & 104,4 & 0,359 & 0,278 \\
+    Reducido & 25 & 0,371 & $-58{,}8$ & 92,6 & 0,359 & 0,278 \\
+    \midrule
+    \multicolumn{7}{l}{Prueba F (reducido vs.\ completo): $F = 2{,}13$ (2 y 3.126 gl), $p = 0{,}12$} \\
+    \bottomrule
+  \end{tabular}
+\end{table}

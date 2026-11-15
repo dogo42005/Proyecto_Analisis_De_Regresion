@@ -1,0 +1,12 @@
+,valor
+n,3153.0
+p,25.0
+umbral_h_2p/n,0.01585791309863622
+n_h_alto,201.0
+umbral_cook_4/n,0.0012686330478908975
+n_cook_alto,164.0
+cook_max,0.024235101925855224
+n_cook_mayor_1,0.0
+n_abs_r_est_mayor_3,16.0
+atipicos_lgd,21.0
+atipicos_lgd_con_cook_alto,15.0

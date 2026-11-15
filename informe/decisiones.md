@@ -60,3 +60,42 @@ Decide: Diego Olivares (Rol 2), en representación del grupo.
   al de la entrega a 202606 (con el crudo a 202603 cambian 5 valores de LGD; ver `cleaning_log.md` §0).
 - Revisar la sección "Uso de IA" del reporte del Rol 1 y la regla de IA de `CLAUDE.md` contra el enunciado
   (el enunciado no permite usar IA para generar el análisis estadístico).
+
+---
+
+## Decisiones del 14-11-2026 (Hito 2)
+
+Contexto: Diego Olivares (Rol 2) no puede seguir trabajando. **Amelie Ramírez** (Rol 3) asume también el Rol 2.
+Las decisiones de la reunión del 13-11 (tomadas por Diego en representación del grupo) se enviaron al grupo para
+su ratificación; **pendiente de confirmar** que nadie está en desacuerdo.
+
+Decide: Amelie Ramírez (Rol 2 y Rol 3).
+
+| # | Tema | Decisión | Por qué |
+|---|---|---|---|
+| H | Transformación del monto original (`orig_upb`) | **Se usa log(monto original)** en el modelo. | Evaluado solo con entrenamiento (Paso 5 del EDA). Box-Cox (λ = 0,35; IC 95 % 0,29–0,41) deja el monto más simétrico, pero la simetría de un predictor no es un requisito del modelo lineal. En linealidad con la LGD (criterio principal), el log rinde igual o mejor: la tendencia LOWESS es la más recta y r = −0,36 (log) vs. −0,35 (Box-Cox) y −0,31 (original). Además lo respalda la regla del logaritmo (máx/mín = 21,8) y su coeficiente se interpreta como efecto de cambios porcentuales del monto. Fuentes: `outputs/figures/eda_05_*.png`, `outputs/tables/eda_05_transformaciones.csv`. |
+| I | Transformación del resto de los predictores numéricos | **Se mantienen en escala original** `dti`, `ltv`, `cltv`, `credit_score` y `orig_interest_rate`. | Evaluado solo con entrenamiento (Paso 5). DTI: único con razón máx/mín > 10 (21,7), pero λ de Box-Cox cercano a 1 (1,20), el log aumenta su asimetría (−0,21 → −1,78) y r con la LGD no cambia (−0,10). LTV y CLTV: asimetría negativa y λ > 1 (2,22 y 2,85); con Box-Cox r sube levemente (−0,22 → −0,26; −0,25 → −0,30), pero la tendencia LOWESS no es monótona (sube hasta LTV 70–80 % y luego baja) y una transformación monótona no puede enderezarla; además la potencia no tiene interpretación clara. Puntaje y tasa: r igual en todas las escalas. Fuentes: `outputs/tables/eda_05_transformaciones.csv`, `outputs/figures/eda_05_transformaciones_ltv_cltv.png`. |
+| J | Seguro hipotecario (`mi_pct`, 66 % de ceros) | **Dos términos: indicadora de tener seguro (`mi_pct` > 0) + `mi_pct`.** | No admite log ni Box-Cox por los ceros. En entrenamiento hay salto (LGD mediana 0,578 sin seguro vs. 0,384 con seguro) y pendiente entre asegurados (r = −0,32). Solo la indicadora pierde la cobertura; solo `mi_pct` mezcla salto y pendiente; log(`mi_pct` + c) y tramos dependen de elecciones arbitrarias. Ojo: el seguro existe casi solo con LTV > 80 % (0 de 2.058 con LTV ≤ 80 %; 1.082 de 1.095 con LTV > 80 %) → revisar VIF con LTV. |
+
+### Observaciones para el diagnóstico (Rol 3)
+
+- La variabilidad de la LGD baja a medida que sube el monto (desv. est. 0,35 en el 20 % de montos más bajos vs.
+  0,22 en el 20 % más alto). Posible varianza no constante: revisar en los residuos.
+- Hay 57 créditos con monto exactamente 417 mil USD (límite de préstamo que podía comprar Freddie Mac en 2007) y solo
+  4 por encima; ninguna transformación elimina ese hueco.
+- La relación de la LGD con LTV y CLTV no es monótona (forma de loma): una recta la representará mal. Reportar como
+  limitación en el Hito 2; para el póster el grupo puede evaluar un término cuadrático. LTV y CLTV tienen r = 0,85.
+
+---
+
+## Decisiones del 15-11-2026 (Hito 2, Rol 3)
+
+Decide: Amelie Ramírez (Rol 3). Todo ajustado solo con entrenamiento (n = 3.153).
+
+| # | Tema | Decisión | Por qué |
+|---|---|---|---|
+| K | LTV vs. CLTV (r = 0,85) | **Se usa el LTV**; el CLTV queda fuera del modelo. | Relación con la LGD casi igual (r = −0,22 vs. −0,25). El LTV describe la hipoteca sobre la que Freddie Mac registra la pérdida (el CLTV suma segundos créditos de otros acreedores). Como el seguro se exige según el LTV (> 80 %), incluirlo permite leer el efecto del seguro a igual LTV. Se acepta el costo de más colinealidad con el seguro (r = 0,77), que se evalúa con el VIF. Alternativa descartada: LTV + (CLTV − LTV), por complicar el modelo sin ganancia clara. |
+| L | Modelos del Hito 2 | **Completo:** 14 bloques (log monto, LTV, seguro [indicadora + `mi_pct`], tasa, puntaje, DTI, propósito, ocupación, división, unidades, primer comprador, n.º de deudores, tipo de propiedad, canal). **Reducido:** el completo sin DTI ni primer comprador. **Se prefiere el reducido.** | Búsqueda de todos los subconjuntos (16.384 modelos, `src/seleccion_modelos.py`): el reducido es el único entre los 3 mejores por AIC y por BIC. Prueba F reducido vs. completo: F = 2,13 (2 y 3.126 gl), p = 0,12. Como el reducido se eligió tras la búsqueda, el p puede estar sesgado; en validación ambos predicen igual (RMSE 0,3586 vs. 0,3587; MAE 0,2780 vs. 0,2778). DTI: además, relación débil y limitación del código 999. Fuentes: `outputs/tables/sel_0*.csv`. |
+
+Nota para el grupo (póster): si el DTI sale del modelo, los 81 créditos sin DTI podrían volver a la base. Para el Hito 2 no se
+toca la base (la prueba F exige los mismos créditos en ambos modelos).

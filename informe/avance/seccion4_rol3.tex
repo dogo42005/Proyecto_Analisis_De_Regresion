@@ -1,0 +1,29 @@
+% Sección 4 (Rol 3: Amelie). Reemplaza el cuerpo de \section{Modelo preliminar y diagnóstico} en main.tex.
+% Cifras: outputs/tables/mod_01_comparacion.csv y rol3_modelos.md (src/modelos.py).
+\begin{table}[H]
+  \centering\small
+  \caption{Modelos OLS anidados ajustados con entrenamiento ($n = 3.153$); error de
+  validación contra la LGD original ($n = 803$). El reducido excluye el DTI y la
+  indicadora de primer comprador.}
+  \begin{tabular}{lcccccc}
+    \toprule
+    Modelo & Parámetros & $R^2$ ajustado & AIC & BIC & RMSE val. & MAE val. \\
+    \midrule
+    Completo & 27 & 0,371 & $-59{,}1$ & 104,4 & 0,359 & 0,278 \\
+    Reducido & 25 & 0,371 & $-58{,}8$ & 92,6 & 0,359 & 0,278 \\
+    \midrule
+    \multicolumn{7}{l}{Prueba F (reducido vs.\ completo): $F = 2{,}13$ (2 y 3.126 gl), $p = 0{,}12$} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{figure}[H]
+  \centering
+  \figura{figuras/figura2.pdf}{\linewidth}
+  \caption{Diagnóstico del modelo reducido (entrenamiento). (a) Residuos frente a valores ajustados y
+  (c) frente a la fecha de liquidación, con tendencia LOWESS. (b) QQ-plot de los residuos estudentizados.
+  (d) Apalancamiento frente a residuo estudentizado; el tamaño del punto es proporcional a la distancia de
+  Cook y los círculos marcan las 21 LGD atípicas.}
+\end{figure}
+
+Se ajustaron con entrenamiento dos OLS anidados: el completo, con 14 bloques de predictores, y el reducido, sin DTI ni primer comprador, elegido tras una búsqueda de todos los subconjuntos. La prueba F no rechaza que esas dos variables sean conjuntamente nulas ($F = 2{,}13$; $p = 0{,}12$), el reducido tiene menor BIC y ambos predicen igual en validación, por lo que se prefiere el reducido (Tabla 2). En su diagnóstico (Figura 2) la linealidad global es adecuada, aunque persiste la forma no monótona del LTV; la varianza crece levemente con el valor ajustado (Breusch-Pagan, $p < 0{,}001$), sin cambios de significancia con errores robustos, y las colas son algo pesadas. No hay multicolinealidad relevante (GVIF máximo 2,88) ni créditos influyentes (Cook máximo 0,024), por lo que se mantienen las 21 LGD atípicas. El modelo sobreestima la LGD de 2008--2009, posiblemente por el ciclo de precios de la crisis. En validación supera al promedio (RMSE 0,359 frente a 0,405; $R^2$ fuera de muestra 0,22), pero su sesgo cambia en el tiempo: sirve para orientar la pérdida esperada, no para predecir casos individuales.

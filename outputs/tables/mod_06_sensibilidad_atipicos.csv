@@ -1,0 +1,26 @@
+,con_atipicos,sin_atipicos,cambio_relativo_%
+Intercept,1.9799,1.8352,-7.3105
+"C(loan_purpose, Treatment('P'))[T.C]",0.1242,0.1254,0.9446
+"C(loan_purpose, Treatment('P'))[T.N]",0.0778,0.0835,7.403
+"C(occupancy_status, Treatment('P'))[T.I]",0.0513,0.046,-10.4786
+"C(occupancy_status, Treatment('P'))[T.S]",0.062,0.0616,-0.5776
+"C(division, Treatment('South Atlantic'))[T.East North Central]",0.0358,0.0313,-12.6288
+"C(division, Treatment('South Atlantic'))[T.East South Central]",-0.1466,-0.1285,12.4075
+"C(division, Treatment('South Atlantic'))[T.Middle Atlantic]",-0.0054,-0.0077,-42.9349
+"C(division, Treatment('South Atlantic'))[T.Mountain]",-0.0417,-0.0401,3.7039
+"C(division, Treatment('South Atlantic'))[T.New England]",-0.0645,-0.0638,1.1754
+"C(division, Treatment('South Atlantic'))[T.Pacific]",-0.0288,-0.0318,-10.2039
+"C(division, Treatment('South Atlantic'))[T.West North Central]",-0.1084,-0.1033,4.7408
+"C(division, Treatment('South Atlantic'))[T.West South Central]",-0.233,-0.2318,0.49
+"C(n_units_grp, Treatment('1'))[T.2-4]",0.1516,0.1524,0.5132
+"C(n_borrowers, Treatment('1'))[T.2]",-0.0357,-0.0372,-4.1472
+"C(property_type_grp, Treatment('SF'))[T.CO]",-0.0022,0.0045,303.9287
+"C(property_type_grp, Treatment('SF'))[T.MH]",0.1216,0.1148,-5.5731
+"C(property_type_grp, Treatment('SF'))[T.PU]",-0.0614,-0.0606,1.2893
+"C(channel_grp, Treatment('R'))[T.TPO]",0.0231,0.0178,-22.9889
+np.log(orig_upb),-0.1741,-0.1605,7.8004
+ltv,0.0068,0.0064,-6.4654
+con_seguro,0.0316,0.035,10.6492
+mi_pct,-0.0113,-0.011,2.3323
+orig_interest_rate,0.0568,0.0541,-4.7666
+credit_score,-0.0003,-0.0003,13.1405
